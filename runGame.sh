@@ -4,7 +4,7 @@
 
 if [ ! -d "./GameData" ]
 then
-	mkdir -p GameData/{categories/,settings/,.score/}
+	mkdir -p GameData/{Game/categories/,Practice/,Setting/}
 fi
 
 

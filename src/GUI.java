@@ -55,6 +55,7 @@ public class GUI extends Application
 	
 	// Practice data
 	String practiceCategory = "";
+	int attemptsRemaining = 0; // placeholder
 	
 	@Override
 	public void start(Stage guiStage)
@@ -115,12 +116,19 @@ public class GUI extends Application
 		practiceConfirmButton.setPrefSize( buttonXScale , buttonYScale );
 		practiceConfirmButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 1.75em; ");
 		
+		// button used to return to in-progress practice question
+		Button practiceReturnButton = new Button( "Return to Question" );
+		practiceReturnButton.setLayoutX( buttonXPos );
+		practiceReturnButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
+		practiceReturnButton.setPrefSize( buttonXScale , buttonYScale );
+		practiceReturnButton.setStyle("-fx-background-color: #EC9706; -fx-font-size: 1.75em; ");
+				
 		// return to menu button (used for other scenes)
 		Button menuButton = new Button( "Back to Menu" );
 		menuButton.setLayoutX( buttonXPos );
 		menuButton.setLayoutY( buttonYStart + buttonYOffset * 3 );
 		menuButton.setPrefSize( buttonXScale , buttonYScale );
-		menuButton.setStyle(buttonStyle);
+		menuButton.setStyle("-fx-background-color: #B43757; -fx-font-size: 1.75em; ");
 		menuButton.setOnAction(e-> guiStage.setScene(menuScene));
 		
 		root.getChildren().add(gameButton);
@@ -154,9 +162,6 @@ public class GUI extends Application
 			@Override
 			public void handle(ActionEvent arg0) {
 				
-				int attemptsRemaining = 0; // placeholder
-				if (attemptsRemaining == 0) {
-				
 				Group practiceRoot = new Group();
 				Scene practiceScene = new Scene( practiceRoot );
 				
@@ -178,8 +183,9 @@ public class GUI extends Application
 				selectCategoryPrompt.fillText( "Select Practice Category", 100, 100 );
 				selectCategoryPrompt.strokeText( "Select Practice Category", 100, 100 );
 				
-				// make confirmation button invisible
+				// make buttons invisible
 				practiceConfirmButton.setVisible(false);
+				practiceReturnButton.setVisible(false);
 				
 				// drop-down menu to choose category
 				ChoiceBox<String> categoryDropDown = new ChoiceBox<String>();
@@ -205,8 +211,9 @@ public class GUI extends Application
 				}
 				
 				practiceRoot.getChildren().add(practiceConfirmButton);
+				practiceRoot.getChildren().add(practiceReturnButton);
 				practiceRoot.getChildren().add( categoryDropDown );
-				//select a category
+				// confirmation button appears when category selected
 				categoryDropDown.getSelectionModel().selectedItemProperty().addListener(
 				       (ObservableValue<? extends String> ov, String old_val, String new_val) -> {
 				    	 practiceCategory = new_val;
@@ -214,8 +221,12 @@ public class GUI extends Application
 				         practiceConfirmButton.setVisible(true);
 				      });
 				
+				// another button appears if the user had an in-progress question from previous session
+				if (attemptsRemaining > 0) {
+					practiceReturnButton.setVisible(true);
+				}
+				
 				guiStage.setScene( practiceScene );
-				} // attempts remaining logic here ~ TODO
 			}
 		});
 		
@@ -262,7 +273,17 @@ public class GUI extends Application
 		practiceConfirmButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
+				// TODO ~ New Practice Question Logic
+				attemptsRemaining = 3;
 				System.out.println(practiceCategory);
+			}
+		});
+		
+		practiceReturnButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				// TODO ~ Return to Practice Question Logic
+				System.out.println("Return to in-progress question");
 			}
 		});
 		guiStage.show();

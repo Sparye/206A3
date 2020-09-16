@@ -1,4 +1,9 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
 import javafx.application.Application;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -6,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -24,8 +30,12 @@ public class GUI extends Application
 	int width = 1200;
 	int height = 800;
 	
+	// file names to use
+	public static final String QUESTIONBANKFILE = "categories";
+	
 	
 	Scene menuScene, gameScene, practiceScene, settingsScene, resetScene;
+	
 	
 	// title settings
 	String menuTitle = "Main Menu";
@@ -42,6 +52,9 @@ public class GUI extends Application
 	double buttonXScale = 250;
 	double buttonYScale = 100;
 	String buttonStyle = "-fx-background-color: #d0e7ff; -fx-font-size: 1.75em; ";
+	
+	// Practice data
+	String practiceCategory = "";
 	
 	@Override
 	public void start(Stage guiStage)
@@ -95,6 +108,13 @@ public class GUI extends Application
 		resetButton.setPrefSize( buttonXScale , buttonYScale );
 		resetButton.setStyle(buttonStyle);
 		
+		// button used to confirm category selection in practice module
+		Button practiceConfirmButton = new Button( "No category selected" );
+		practiceConfirmButton.setLayoutX( buttonXPos );
+		practiceConfirmButton.setLayoutY( buttonYStart + buttonYOffset * 1 );
+		practiceConfirmButton.setPrefSize( buttonXScale , buttonYScale );
+		practiceConfirmButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 1.75em; ");
+		
 		// return to menu button (used for other scenes)
 		Button menuButton = new Button( "Back to Menu" );
 		menuButton.setLayoutX( buttonXPos );
@@ -133,6 +153,10 @@ public class GUI extends Application
 		practiceButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
+				
+				int attemptsRemaining = 0; // placeholder
+				if (attemptsRemaining == 0) {
+				
 				Group practiceRoot = new Group();
 				Scene practiceScene = new Scene( practiceRoot );
 				
@@ -144,9 +168,54 @@ public class GUI extends Application
 				practiceRoot.getChildren().add( practiceBackground );
 				practiceRoot.getChildren().add(menuButton);
 				
-				// PRACTICE LOGIC HERE ~ TODO
+				GraphicsContext selectCategoryPrompt = practiceCanvas.getGraphicsContext2D();
+				// select category prompt
+				background.setStyle(backgroundStyle);
+				selectCategoryPrompt.setFill( Color.PURPLE );
+				selectCategoryPrompt.setStroke( Color.BLACK );
+				selectCategoryPrompt.setLineWidth(2);
+				selectCategoryPrompt.setFont( titleFont );
+				selectCategoryPrompt.fillText( "Select Practice Category", 100, 100 );
+				selectCategoryPrompt.strokeText( "Select Practice Category", 100, 100 );
+				
+				// make confirmation button invisible
+				practiceConfirmButton.setVisible(false);
+				
+				// drop-down menu to choose category
+				ChoiceBox<String> categoryDropDown = new ChoiceBox<String>();
+				categoryDropDown.setLayoutX(buttonXPos - 30);
+				categoryDropDown.setLayoutY(buttonYStart);
+				categoryDropDown.setPrefSize(buttonXScale + 60, buttonYScale);
+				categoryDropDown.setStyle( buttonStyle );
+	
+				try {
+					String line;
+					// Add category names to drop-down
+					BufferedReader readCategories = new BufferedReader(new FileReader(QUESTIONBANKFILE));
+					while((line = readCategories.readLine()) != null) {
+						if (line.indexOf('(') == -1 ) {
+							if (!line.isBlank()) {
+								categoryDropDown.getItems().add(line);
+							}
+						}
+					}
+					readCategories.close();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				
+				practiceRoot.getChildren().add(practiceConfirmButton);
+				practiceRoot.getChildren().add( categoryDropDown );
+				//select a category
+				categoryDropDown.getSelectionModel().selectedItemProperty().addListener(
+				       (ObservableValue<? extends String> ov, String old_val, String new_val) -> {
+				    	 practiceCategory = new_val;
+				    	 practiceConfirmButton.setText( "Practice This!");
+				         practiceConfirmButton.setVisible(true);
+				      });
 				
 				guiStage.setScene( practiceScene );
+				} // attempts remaining logic here ~ TODO
 			}
 		});
 		
@@ -165,7 +234,7 @@ public class GUI extends Application
 				settingsRoot.getChildren().add(menuButton);
 				
 				// SETTINGS LOGIC HERE ~ TODO
-				
+
 				guiStage.setScene( settingsScene );
 			}
 		});
@@ -187,6 +256,13 @@ public class GUI extends Application
 				// RESET LOGIC HERE ~ TODO
 				
 				guiStage.setScene( resetScene );
+			}
+		});
+		
+		practiceConfirmButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				System.out.println(practiceCategory);
 			}
 		});
 		guiStage.show();

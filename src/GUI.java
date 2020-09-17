@@ -15,11 +15,13 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 public class GUI extends Application
@@ -115,7 +117,7 @@ public class GUI extends Application
 		resetButton.setStyle(buttonStyle);
 		
 		// button used to confirm category selection in practice module
-		Button practiceConfirmButton = new Button( "No category selected" );
+		Button practiceConfirmButton = new Button( "Practice This!" );
 		practiceConfirmButton.setLayoutX( buttonXPos );
 		practiceConfirmButton.setLayoutY( buttonYStart + buttonYOffset * 1 );
 		practiceConfirmButton.setPrefSize( buttonXScale , buttonYScale );
@@ -127,6 +129,13 @@ public class GUI extends Application
 		practiceReturnButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
 		practiceReturnButton.setPrefSize( buttonXScale , buttonYScale );
 		practiceReturnButton.setStyle("-fx-background-color: #EC9706; -fx-font-size: 1.75em; ");
+		
+		// button used to lock in a practice question attempt
+		Button practiceLockInButton = new Button( "I'm Sure!" );
+		practiceLockInButton.setLayoutX( buttonXPos );
+		practiceLockInButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
+		practiceLockInButton.setPrefSize( buttonXScale , buttonYScale );
+		practiceLockInButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 1.75em; ");
 				
 		// return to menu button (used for other scenes)
 		Button menuButton = new Button( "Back to Menu" );
@@ -180,7 +189,6 @@ public class GUI extends Application
 				
 				GraphicsContext selectCategoryPrompt = practiceCanvas.getGraphicsContext2D();
 				// select category prompt
-				background.setStyle(backgroundStyle);
 				selectCategoryPrompt.setFill( Color.PURPLE );
 				selectCategoryPrompt.setStroke( Color.BLACK );
 				selectCategoryPrompt.setLineWidth(2);
@@ -222,7 +230,6 @@ public class GUI extends Application
 				categoryDropDown.getSelectionModel().selectedItemProperty().addListener(
 				       (ObservableValue<? extends String> ov, String old_val, String new_val) -> {
 				    	 practiceCategory = new_val;
-				    	 practiceConfirmButton.setText( "Practice This!");
 				         practiceConfirmButton.setVisible(true);
 				      });
 				
@@ -241,15 +248,59 @@ public class GUI extends Application
 				Canvas practiceQuestionCanvas = new Canvas( width, height );
 				practiceQuestionBackground.setStyle( backgroundStyle );
 				
+				// practice module title
+				GraphicsContext categoryTitlePrompt = practiceQuestionCanvas.getGraphicsContext2D();
+				categoryTitlePrompt.setFill( Color.PURPLE );
+				categoryTitlePrompt.setStroke( Color.BLACK );
+				categoryTitlePrompt.setLineWidth(2);
+				categoryTitlePrompt.setFont( titleFont );
+				categoryTitlePrompt.fillText( "Practice Module", 270, 100 );
+				categoryTitlePrompt.strokeText( "Practice Module", 270, 100 );
+				
+				// displays the question
 				Text practiceQuestionPrompt = new Text( practiceQuestion );
 				practiceQuestionPrompt.setWrappingWidth( 800 );
 				practiceQuestionPrompt.setStyle("-fx-font-size: 2.5em; ");
-				practiceQuestionBackground.getChildren().add( practiceQuestionPrompt );
-				StackPane.setAlignment(practiceQuestionPrompt, Pos.CENTER);
+				practiceQuestionPrompt.setTextAlignment(TextAlignment.CENTER);
+				practiceQuestionPrompt.setLayoutY(buttonYStart);
+				practiceQuestionPrompt.setLayoutX(200);
+				
+				// user answer field
+				TextField answerField = new TextField("Type Response Here!");
+				answerField.setLayoutX( buttonXPos - 75 ) ;
+				answerField.setLayoutY( buttonYStart + buttonYOffset );
+				answerField.setPrefSize( 400 , 50 );
+				answerField.setStyle( buttonStyle );
+				
+				if (attemptsRemaining == 1) {
+					// make field text red and display the first letter
+					answerField.setStyle( buttonStyle + " -fx-text-fill: #B43757;");
+					String firstLetter = "c"; // Placeholder
+					answerField.setText(firstLetter.toUpperCase());
+				} 
+				
+				// display remaining attempts
+				Text displayAttempts = new Text(attemptsRemaining + "\nAttempts Remaining");
+				displayAttempts.setLayoutX( 50 ) ;
+				displayAttempts.setLayoutY( buttonYStart + buttonYOffset * 4 );
+				displayAttempts.setTextAlignment(TextAlignment.CENTER);
+				displayAttempts.setStyle("-fx-background-color: #d0e7ff; -fx-font-size: 1.75em; ");
+				
+				// make lock in button appear when answer field text is changed
+				answerField.textProperty().addListener(
+					       (ObservableValue<? extends String> ov, String old_val, String new_val) -> {
+					         practiceLockInButton.setVisible(true);
+					      });
+				
 				
 				practiceQuestionBackground.getChildren().add( practiceQuestionCanvas );
 				practiceQuestionRoot.getChildren().add( practiceQuestionBackground );
-				
+				practiceQuestionRoot.getChildren().add( practiceQuestionPrompt );
+				practiceQuestionRoot.getChildren().add( answerField );
+				practiceQuestionRoot.getChildren().add( practiceLockInButton ); 
+				practiceQuestionRoot.getChildren().add( displayAttempts ); 
+
+				practiceLockInButton.setVisible(false);
 				
 				practiceConfirmButton.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
@@ -279,6 +330,7 @@ public class GUI extends Application
 						Random chooseRandomQuestion = new Random();
 						practiceQuestion = questionArray.get(chooseRandomQuestion.nextInt(questionArray.size()));
 						attemptsRemaining = 3; // placeholder
+						displayAttempts.setText(attemptsRemaining + "\nAttempts Remaining");
 						practiceQuestionPrompt.setText( practiceQuestion );
 						
 						practiceQuestionRoot.getChildren().add(menuButton);
@@ -295,6 +347,29 @@ public class GUI extends Application
 						guiStage.setScene( practiceQuestionScene );
 					}
 				});
+				
+				practiceLockInButton.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent arg0) {
+						// TODO ~ VERIFY ATTEMPT LOGIC
+						attemptsRemaining--;
+						if (attemptsRemaining == 0) {
+							practiceQuestionRoot.getChildren().remove(answerField);
+							practiceQuestionRoot.getChildren().remove(practiceLockInButton);
+							practiceQuestionRoot.getChildren().remove(displayAttempts);
+							
+						} else {
+							if (attemptsRemaining == 1) {
+								// make text red and display the first letter
+								answerField.setStyle( buttonStyle + " -fx-text-fill: #B43757;");
+								String firstLetter = "c"; // Placeholder
+								answerField.setText(firstLetter.toUpperCase());
+							} 
+							displayAttempts.setText(attemptsRemaining + "\nAttempts Remaining");
+						}
+					}
+				});
+				
 				
 			}
 		});

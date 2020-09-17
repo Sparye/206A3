@@ -96,7 +96,7 @@ public class GUI extends Application
 		gameButton.setLayoutX( buttonXPos );
 		gameButton.setLayoutY( buttonYStart );
 		gameButton.setPrefSize( buttonXScale , buttonYScale );
-		gameButton.setStyle(buttonStyle);
+		gameButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 1.75em; ");
 		
 		Button practiceButton = new Button( "Practice" );
 		practiceButton.setLayoutX( buttonXPos );
@@ -108,13 +108,13 @@ public class GUI extends Application
 		settingsButton.setLayoutX( buttonXPos );
 		settingsButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
 		settingsButton.setPrefSize( buttonXScale , buttonYScale );
-		settingsButton.setStyle(buttonStyle);
+		settingsButton.setStyle("-fx-background-color: #EC9706; -fx-font-size: 1.75em; ");
 		
 		Button resetButton = new Button( "Reset Progress" );
 		resetButton.setLayoutX( buttonXPos );
 		resetButton.setLayoutY( buttonYStart + buttonYOffset * 3 );
 		resetButton.setPrefSize( buttonXScale , buttonYScale );
-		resetButton.setStyle(buttonStyle);
+		resetButton.setStyle("-fx-background-color: #B43757; -fx-font-size: 1.75em; ");
 		
 		// button used to confirm category selection in practice module
 		Button practiceConfirmButton = new Button( "Practice This!" );
@@ -272,6 +272,14 @@ public class GUI extends Application
 				answerField.setPrefSize( 400 , 50 );
 				answerField.setStyle( buttonStyle );
 				
+				// correct answer (appears when out of attempts)
+				Text actualAnswer = new Text();
+				actualAnswer.setLayoutX( buttonXPos - 75 ) ;
+				actualAnswer.setLayoutY( buttonYStart + buttonYOffset );
+				practiceQuestionPrompt.setWrappingWidth( 800 );
+				practiceQuestionPrompt.setTextAlignment(TextAlignment.CENTER);
+				actualAnswer.setStyle( buttonStyle + "-fx-font-size: 4em; " );
+				
 				if (attemptsRemaining == 1) {
 					// make field text red and display the first letter
 					answerField.setStyle( buttonStyle + " -fx-text-fill: #B43757;");
@@ -357,6 +365,10 @@ public class GUI extends Application
 							practiceQuestionRoot.getChildren().remove(answerField);
 							practiceQuestionRoot.getChildren().remove(practiceLockInButton);
 							practiceQuestionRoot.getChildren().remove(displayAttempts);
+							
+							String answer = "womp womp :(";
+							actualAnswer.setText(answer);
+							practiceQuestionRoot.getChildren().add(actualAnswer);
 							
 						} else {
 							if (attemptsRemaining == 1) {

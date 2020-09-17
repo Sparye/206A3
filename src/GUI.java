@@ -1,11 +1,14 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Random;
 
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -16,6 +19,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class GUI extends Application
@@ -56,6 +60,7 @@ public class GUI extends Application
 	// Practice data
 	String practiceCategory = "";
 	int attemptsRemaining = 0; // placeholder
+	String practiceQuestion = ""; // placeholder
 	
 	@Override
 	public void start(Stage guiStage)
@@ -227,6 +232,70 @@ public class GUI extends Application
 				}
 				
 				guiStage.setScene( practiceScene );
+				
+				// practice question scene
+				Group practiceQuestionRoot = new Group();
+				Scene practiceQuestionScene = new Scene( practiceQuestionRoot );
+				
+				StackPane practiceQuestionBackground = new StackPane();
+				Canvas practiceQuestionCanvas = new Canvas( width, height );
+				practiceQuestionBackground.setStyle( backgroundStyle );
+				
+				Text practiceQuestionPrompt = new Text( practiceQuestion );
+				practiceQuestionPrompt.setWrappingWidth( 800 );
+				practiceQuestionPrompt.setStyle("-fx-font-size: 2.5em; ");
+				practiceQuestionBackground.getChildren().add( practiceQuestionPrompt );
+				StackPane.setAlignment(practiceQuestionPrompt, Pos.CENTER);
+				
+				practiceQuestionBackground.getChildren().add( practiceQuestionCanvas );
+				practiceQuestionRoot.getChildren().add( practiceQuestionBackground );
+				
+				
+				practiceConfirmButton.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent arg0) {
+						// TODO ~ New Practice Question Logic
+						
+						// make an array of questions
+						ArrayList<String> questionArray = new ArrayList<String>();
+						try {
+						String line;
+						BufferedReader readQuestions = new BufferedReader(new FileReader(QUESTIONBANKFILE));
+						while((line = readQuestions.readLine()) != null) {
+							// get to category line
+							if (line.equals(practiceCategory)) {
+								break;
+							}
+						}
+						while(((line = readQuestions.readLine()) != null) && (line.indexOf('(') >= 0 )) {
+							questionArray.add( line );
+						}
+						readQuestions.close();
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+						
+						// choose one question randomly
+						Random chooseRandomQuestion = new Random();
+						practiceQuestion = questionArray.get(chooseRandomQuestion.nextInt(questionArray.size()));
+						attemptsRemaining = 3; // placeholder
+						practiceQuestionPrompt.setText( practiceQuestion );
+						
+						practiceQuestionRoot.getChildren().add(menuButton);
+						guiStage.setScene( practiceQuestionScene );
+						
+					}
+				});
+				
+				practiceReturnButton.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent arg0) {
+						// TODO ~ Return to Practice Question Logic
+						practiceQuestionRoot.getChildren().add(menuButton);
+						guiStage.setScene( practiceQuestionScene );
+					}
+				});
+				
 			}
 		});
 		
@@ -270,22 +339,6 @@ public class GUI extends Application
 			}
 		});
 		
-		practiceConfirmButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				// TODO ~ New Practice Question Logic
-				attemptsRemaining = 3;
-				System.out.println(practiceCategory);
-			}
-		});
-		
-		practiceReturnButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				// TODO ~ Return to Practice Question Logic
-				System.out.println("Return to in-progress question");
-			}
-		});
 		guiStage.show();
 	}
 }

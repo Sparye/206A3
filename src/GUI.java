@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -8,7 +10,6 @@ import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -38,7 +39,8 @@ public class GUI extends Application
 	
 	// file names to use
 	public static final String QUESTIONBANKFILE = "categories";
-	
+	public static final String PRACTICEATTEMPTFILE = "GameData/Practice/Attempt";
+	public static final String PRACTICEQUESTIONFILE = "GameData/Practice/Question";
 	
 	Scene menuScene, gameScene, practiceScene, settingsScene, resetScene;
 	
@@ -70,6 +72,22 @@ public class GUI extends Application
 		
 		guiStage.setResizable(false);
 		guiStage.setTitle( "Quinzical" );
+		
+		// fetch data
+		try {
+			// get practice attempts
+			BufferedReader getAttempts = new BufferedReader(new FileReader(PRACTICEATTEMPTFILE));
+			attemptsRemaining = Integer.parseInt(getAttempts.readLine());
+			getAttempts.close();
+			if (attemptsRemaining > 0) {
+			// get practice question
+			BufferedReader getPracticeQuestion = new BufferedReader(new FileReader(PRACTICEQUESTIONFILE));
+			practiceQuestion = getPracticeQuestion.readLine();
+			getPracticeQuestion.close();
+			}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		
 		//  Main Menu setup
 		Group root = new Group();
@@ -337,7 +355,21 @@ public class GUI extends Application
 						// choose one question randomly
 						Random chooseRandomQuestion = new Random();
 						practiceQuestion = questionArray.get(chooseRandomQuestion.nextInt(questionArray.size()));
-						attemptsRemaining = 3; // placeholder
+						
+						// reset attempts
+						attemptsRemaining = 3;
+						try {
+						PrintWriter resetAttempts = new PrintWriter(new FileWriter(PRACTICEATTEMPTFILE));
+						resetAttempts.println(attemptsRemaining + "");
+						resetAttempts.close();
+						// save new question
+						PrintWriter saveQuestion = new PrintWriter(new FileWriter(PRACTICEQUESTIONFILE));
+						saveQuestion.println(practiceQuestion);
+						saveQuestion.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						
 						displayAttempts.setText(attemptsRemaining + "\nAttempts Remaining");
 						practiceQuestionPrompt.setText( practiceQuestion );
 						
@@ -361,6 +393,13 @@ public class GUI extends Application
 					public void handle(ActionEvent arg0) {
 						// TODO ~ VERIFY ATTEMPT LOGIC
 						attemptsRemaining--;
+						try {
+							PrintWriter saveAttempts = new PrintWriter(new FileWriter(PRACTICEATTEMPTFILE));
+							saveAttempts.println(attemptsRemaining + "");
+							saveAttempts.close();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 						if (attemptsRemaining == 0) {
 							practiceQuestionRoot.getChildren().remove(answerField);
 							practiceQuestionRoot.getChildren().remove(practiceLockInButton);
@@ -376,7 +415,7 @@ public class GUI extends Application
 								answerField.setStyle( buttonStyle + " -fx-text-fill: #B43757;");
 								String firstLetter = "c"; // Placeholder
 								answerField.setText(firstLetter.toUpperCase());
-							} 
+							}
 							displayAttempts.setText(attemptsRemaining + "\nAttempts Remaining");
 						}
 					}

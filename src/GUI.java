@@ -16,6 +16,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -41,6 +42,7 @@ public class GUI extends Application
 	public static final String QUESTIONBANKFILE = "categories";
 	public static final String PRACTICEATTEMPTFILE = "GameData/Practice/Attempt";
 	public static final String PRACTICEQUESTIONFILE = "GameData/Practice/Question";
+	public static final String TTSSPEEDFILE = "GameData/Setting/TTS";
 	
 	Scene menuScene, gameScene, practiceScene, settingsScene, resetScene;
 	
@@ -61,10 +63,13 @@ public class GUI extends Application
 	double buttonYScale = 100;
 	String buttonStyle = "-fx-background-color: #d0e7ff; -fx-font-size: 1.75em; ";
 	
-	// Practice data
+	// default data
+	public static final int DEFAULTSPEED = 160;
+	int ttsSpeed = DEFAULTSPEED;
+	int testSpeed = ttsSpeed;
 	String practiceCategory = "";
 	int attemptsRemaining = 0; // placeholder
-	String practiceQuestion = ""; // placeholder
+	String practiceQuestion = "Don't edit the game files! :("; // placeholder
 	
 	@Override
 	public void start(Stage guiStage)
@@ -77,13 +82,32 @@ public class GUI extends Application
 		try {
 			// get practice attempts
 			BufferedReader getAttempts = new BufferedReader(new FileReader(PRACTICEATTEMPTFILE));
-			attemptsRemaining = Integer.parseInt(getAttempts.readLine());
+			String attemptLine = getAttempts.readLine();
+			if (attemptLine == null) {
+				PrintWriter saveAttempts = new PrintWriter(new FileWriter(PRACTICEATTEMPTFILE));
+				saveAttempts.println(attemptsRemaining + "");
+				saveAttempts.close();
+			} else {
+				attemptsRemaining = Integer.parseInt( attemptLine );
+			}
+			//attemptsRemaining = Integer.parseInt(attemptLine);
 			getAttempts.close();
 			if (attemptsRemaining > 0) {
-			// get practice question
-			BufferedReader getPracticeQuestion = new BufferedReader(new FileReader(PRACTICEQUESTIONFILE));
-			practiceQuestion = getPracticeQuestion.readLine();
-			getPracticeQuestion.close();
+				// get practice question
+				BufferedReader getPracticeQuestion = new BufferedReader(new FileReader(PRACTICEQUESTIONFILE));
+				String practiceQuestionLine = getPracticeQuestion.readLine();
+				getPracticeQuestion.close();
+				if (practiceQuestionLine != null) {
+					practiceQuestion = practiceQuestionLine;
+				}
+			}
+			// get tts speed
+			BufferedReader getSpeed = new BufferedReader(new FileReader(TTSSPEEDFILE));
+			String speedLine = getSpeed.readLine();
+			getSpeed.close();
+			if (speedLine != null) {
+				ttsSpeed = Integer.parseInt( speedLine );
+				testSpeed = ttsSpeed;
 			}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -161,6 +185,13 @@ public class GUI extends Application
 		practiceLockInButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
 		practiceLockInButton.setPrefSize( buttonXScale , buttonYScale );
 		practiceLockInButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 1.75em; ");
+		
+		// button used to lock in a practice question attempt
+		Button saveSettingsButton = new Button( "Save" );
+		saveSettingsButton.setLayoutX( buttonXPos );
+		saveSettingsButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
+		saveSettingsButton.setPrefSize( buttonXScale , buttonYScale );
+		saveSettingsButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 1.75em; ");
 				
 		// return to menu button (used for other scenes)
 		Button menuButton = new Button( "Back to Menu" );
@@ -453,12 +484,45 @@ public class GUI extends Application
 				Canvas settingsCanvas = new Canvas( width, height );
 				settingsBackground.setStyle( backgroundStyle );
 				
+				GraphicsContext settingsTitle = settingsCanvas.getGraphicsContext2D();
+				// settings sub-menu title
+				settingsTitle.setFill( Color.PURPLE );
+				settingsTitle.setStroke( Color.BLACK );
+				settingsTitle.setLineWidth(2);
+				settingsTitle.setFont( titleFont );
+				settingsTitle.fillText( "Settings", 425, 100 );
+				settingsTitle.strokeText( "Settings", 425, 100 );
+				
+				// tts speed slider label
+				Text speedText = new Text(String.format("Talking Speed: x%.2f",(ttsSpeed / (double)(DEFAULTSPEED))));
+				speedText.setStyle("-fx-font-size: 1.5em; ");
+				speedText.setTextAlignment(TextAlignment.CENTER);
+				speedText.setLayoutY( buttonYStart );
+				speedText.setLayoutX( buttonXPos );
+				
+				// TTS speed slider
+				Slider speedSlider = new Slider( 40 , 400 , ttsSpeed );
+				speedSlider.setLayoutX(buttonXPos - 130 );
+				speedSlider.setLayoutY(buttonYStart + 10);
+				speedSlider.setPrefWidth(buttonXScale * 2);
+				speedSlider.setStyle("-fx-control-inner-background: #4E4C58; -fx-color: #50C878;");
+				speedSlider.valueProperty().addListener((observable, oldvalue, newvalue) ->
+				{
+					testSpeed = newvalue.intValue();
+					saveSettingsButton.setVisible(true);
+					speedText.setText(String.format("Talking Speed: x%.2f",(testSpeed / (double)(DEFAULTSPEED))));
+				});
+				
+				saveSettingsButton.setVisible(false);
 				settingsBackground.getChildren().add( settingsCanvas );
 				settingsRoot.getChildren().add( settingsBackground );
-				settingsRoot.getChildren().add(menuButton);
+				settingsRoot.getChildren().add( speedText );
+				settingsRoot.getChildren().add( speedSlider );
+				settingsRoot.getChildren().add( menuButton );
+				settingsRoot.getChildren().add( saveSettingsButton );
 				
 				// SETTINGS LOGIC HERE ~ TODO
-
+				
 				guiStage.setScene( settingsScene );
 			}
 		});
@@ -528,6 +592,23 @@ public class GUI extends Application
 			}
 		});
 		
+		saveSettingsButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				
+				saveSettingsButton.setVisible(false);
+				// save tts speed
+				try {
+					ttsSpeed = testSpeed;
+					PrintWriter saveSpeed = new PrintWriter(new FileWriter(TTSSPEEDFILE));
+					saveSpeed.println(ttsSpeed + "");
+					saveSpeed.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
+			}
+		});
 		guiStage.show();
 	}
 }

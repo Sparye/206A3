@@ -134,6 +134,13 @@ public class GUI extends Application
 		resetButton.setPrefSize( buttonXScale , buttonYScale );
 		resetButton.setStyle("-fx-background-color: #B43757; -fx-font-size: 1.75em; ");
 		
+		// button used to reset data (in reset submenu)
+		Button resetConfirmButton = new Button( "Confirm Reset" );
+		resetConfirmButton.setLayoutX( buttonXPos );
+		resetConfirmButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
+		resetConfirmButton.setPrefSize( buttonXScale , buttonYScale );
+		resetConfirmButton.setStyle("-fx-text-fill: #D4D4D4; -fx-background-color: #4E4C58; -fx-font-size: 1.75em; ");
+		
 		// button used to confirm category selection in practice module
 		Button practiceConfirmButton = new Button( "Practice This!" );
 		practiceConfirmButton.setLayoutX( buttonXPos );
@@ -163,12 +170,23 @@ public class GUI extends Application
 		menuButton.setStyle("-fx-background-color: #B43757; -fx-font-size: 1.75em; ");
 		menuButton.setOnAction(e-> guiStage.setScene(menuScene));
 		
+		
+		
 		root.getChildren().add(gameButton);
 		root.getChildren().add(practiceButton);
 		root.getChildren().add(settingsButton);
 		root.getChildren().add(resetButton);
 		
 		guiStage.setScene( menuScene );
+		
+		// reset notify
+		Text resetHappenedText = new Text( "Reset Performed!" );
+		resetHappenedText.setWrappingWidth( 800 );
+		resetHappenedText.setStyle("-fx-font-size: 1.7em; ");
+		resetHappenedText.setTextAlignment(TextAlignment.CENTER);
+		resetHappenedText.setLayoutY(buttonYStart + buttonYOffset * 2 + 50);
+		resetHappenedText.setLayoutX(200);
+		
 		// button handlers
 		gameButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -448,6 +466,8 @@ public class GUI extends Application
 		resetButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
+				
+				// reset sub-menu scene
 				Group resetRoot = new Group();
 				Scene resetScene = new Scene( resetRoot );
 				
@@ -455,13 +475,56 @@ public class GUI extends Application
 				Canvas resetCanvas = new Canvas( width, height );
 				resetBackground.setStyle( backgroundStyle );
 				
+				GraphicsContext resetTitle = resetCanvas.getGraphicsContext2D();
+				// reset sub-menu title
+				resetTitle.setFill( Color.PURPLE );
+				resetTitle.setStroke( Color.BLACK );
+				resetTitle.setLineWidth(2);
+				resetTitle.setFont( titleFont );
+				resetTitle.fillText( "Reset Progress", 300, 100 );
+				resetTitle.strokeText( "Reset Progress", 300, 100 );
+				
+				String resetExplanation = 
+				"If you reset, you will lose:\n"
+				+ "   > In-progress Games\n"
+				+ "   > In-progress Practice Questions\n"
+				+ "   > Any unlockables or achievements\n\n"
+				+ "             Settings will be retained.";
+				Text resetText = new Text( resetExplanation );
+				resetText.setWrappingWidth( 800 );
+				resetText.setStyle("-fx-font-size: 3em; ");
+				//resetText.setTextAlignment(TextAlignment.CENTER);
+				resetText.setLayoutY(buttonYStart + 30);
+				resetText.setLayoutX(200);
+				
+				resetConfirmButton.setVisible(true);
+				resetHappenedText.setVisible(false);
+				
 				resetBackground.getChildren().add( resetCanvas );
 				resetRoot.getChildren().add( resetBackground );
+				resetRoot.getChildren().add( resetConfirmButton );
+				resetRoot.getChildren().add( resetHappenedText );
+				resetRoot.getChildren().add( resetText );
 				resetRoot.getChildren().add(menuButton);
 				
-				// RESET LOGIC HERE ~ TODO
-				
 				guiStage.setScene( resetScene );
+			}
+		});
+		
+		resetConfirmButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				// reset practice module
+				attemptsRemaining = 0;
+				try {
+					PrintWriter saveAttempts = new PrintWriter(new FileWriter(PRACTICEATTEMPTFILE));
+					saveAttempts.println(attemptsRemaining + "");
+					saveAttempts.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				resetConfirmButton.setVisible(false);
+				resetHappenedText.setVisible(true);
 			}
 		});
 		

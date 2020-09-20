@@ -36,15 +36,15 @@ public class TextToSpeech {
 
 	}
 	
-	public static void toTestSpeech(String speed)  {
+	public static void toTestSpeech(int speed)  {
 		String msg = "This is the speed of speaking";
 		try {
 			String refinedMsg = "\"" + msg + "\"";
 		//	String command = "espeak "+refinedMsg+" -s 100";
 		//String command = "espeak "+msg;
-			String command = "espeak "+refinedMsg+" -s "+speed;
+			String command = "espeak "+refinedMsg+" -s "+Integer.toString(speed);
 
-		//	System.out.println(command);
+			System.out.println(command);
 			ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
 			
 			Process process = pb.start();

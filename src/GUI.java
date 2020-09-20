@@ -201,6 +201,16 @@ public class GUI extends Application
 		menuButton.setStyle("-fx-background-color: #B43757; -fx-font-size: 1.75em; ");
 		menuButton.setOnAction(e-> guiStage.setScene(menuScene));
 		
+		//button used to test speed in setting
+		Button testSpeedButton = new Button( "Test Speed" );
+		testSpeedButton.setLayoutX(buttonXPos + 400);
+		testSpeedButton.setLayoutY(buttonYStart - 10 );
+		testSpeedButton.setPrefSize( buttonXScale/2 , buttonYScale/2 );
+		testSpeedButton.setStyle("-fx-background-color: #003399; -fx-font-size: 1.25em; -fx-text-fill: white; ");
+		testSpeedButton.setOnAction(e-> {
+			TextToSpeech.toTestSpeech(testSpeed);
+		});
+		
 		
 		
 		root.getChildren().add(gameButton);
@@ -513,6 +523,8 @@ public class GUI extends Application
 					speedText.setText(String.format("Talking Speed: x%.2f",(testSpeed / (double)(DEFAULTSPEED))));
 				});
 				
+		
+				
 				saveSettingsButton.setVisible(false);
 				settingsBackground.getChildren().add( settingsCanvas );
 				settingsRoot.getChildren().add( settingsBackground );
@@ -520,6 +532,7 @@ public class GUI extends Application
 				settingsRoot.getChildren().add( speedSlider );
 				settingsRoot.getChildren().add( menuButton );
 				settingsRoot.getChildren().add( saveSettingsButton );
+				settingsRoot.getChildren().add( testSpeedButton );
 				
 				// SETTINGS LOGIC HERE ~ TODO
 				

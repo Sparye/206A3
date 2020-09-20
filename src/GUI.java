@@ -340,14 +340,6 @@ public class GUI extends Application
 				answerField.setPrefSize( 400 , 50 );
 				answerField.setStyle( buttonStyle );
 				
-				// correct answer (appears when out of attempts)
-				Text actualAnswer = new Text();
-				actualAnswer.setLayoutX( buttonXPos - 75 ) ;
-				actualAnswer.setLayoutY( buttonYStart + buttonYOffset );
-				practiceQuestionPrompt.setWrappingWidth( 800 );
-				practiceQuestionPrompt.setTextAlignment(TextAlignment.CENTER);
-				actualAnswer.setStyle( buttonStyle + "-fx-font-size: 4em; " );
-				
 				if (attemptsRemaining == 1) {
 					// make field text red and display the first letter
 					answerField.setStyle( buttonStyle + " -fx-text-fill: #B43757;");
@@ -442,33 +434,53 @@ public class GUI extends Application
 				practiceLockInButton.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent arg0) {
-						// TODO ~ VERIFY ATTEMPT LOGIC
-						attemptsRemaining--;
-						try {
-							PrintWriter saveAttempts = new PrintWriter(new FileWriter(PRACTICEATTEMPTFILE));
-							saveAttempts.println(attemptsRemaining + "");
-							saveAttempts.close();
-							} catch (IOException e) {
-								e.printStackTrace();
+						
+						// A "/" indicates multiple valid answers
+						String[] answerSet = practiceQuestionSet[2].split("/", 0);
+						boolean correct = false;
+						for (int i = 0; i<answerSet.length; i++) {
+							if (answerField.getText().equalsIgnoreCase(practiceQuestionSet[1]+ " " + answerSet[i].strip())) {
+								correct = true;
 							}
-						if (attemptsRemaining == 0) {
+						}
+						if (correct) {
+							// User answered correctly
 							practiceQuestionRoot.getChildren().remove(answerField);
 							practiceQuestionRoot.getChildren().remove(practiceLockInButton);
 							practiceQuestionRoot.getChildren().remove(displayAttempts);
 							
-							String answer = practiceQuestionSet[1] + " " + practiceQuestionSet[2];
-							actualAnswer.setText(answer);
-							practiceQuestionRoot.getChildren().add(actualAnswer);
-							
+							String answer = "\n\nCorrect Answer!!\n\nYou Answered:\n" + practiceQuestionSet[1] + " " + practiceQuestionSet[2];
+							practiceQuestionPrompt.setText(practiceQuestionSet[0] + answer);
+							attemptsRemaining = 0;
 						} else {
-							if (attemptsRemaining == 1) {
-								// make text red and display the first letter
-								answerField.setStyle( buttonStyle + " -fx-text-fill: #B43757;");
-								String firstLetter = "" + practiceQuestionSet[2].charAt(0); // Placeholder
-								answerField.setText(firstLetter.toUpperCase());
+							// User answered incorrectly
+							attemptsRemaining--;
+							if (attemptsRemaining == 0) {
+								practiceQuestionRoot.getChildren().remove(answerField);
+								practiceQuestionRoot.getChildren().remove(practiceLockInButton);
+								practiceQuestionRoot.getChildren().remove(displayAttempts);
+								
+								String answer = "\n\nNo more attempts!\n\nAnswer:\n" + practiceQuestionSet[1] + " " + practiceQuestionSet[2];
+								practiceQuestionPrompt.setText(practiceQuestionSet[0] + answer);
+								
+							} else {
+								if (attemptsRemaining == 1) {
+									// make text red and display the first letter
+									answerField.setStyle( buttonStyle + " -fx-text-fill: #B43757;");
+									String firstLetter = "" + practiceQuestionSet[2].charAt(0);
+									answerField.setText(firstLetter.toUpperCase());
+								}
+								displayAttempts.setText(attemptsRemaining + "\nAttempts Remaining");
 							}
-							displayAttempts.setText(attemptsRemaining + "\nAttempts Remaining");
-						}
+							}
+							try {
+								PrintWriter saveAttempts = new PrintWriter(new FileWriter(PRACTICEATTEMPTFILE));
+								saveAttempts.println(attemptsRemaining + "");
+								saveAttempts.close();
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							
 					}
 				});
 				

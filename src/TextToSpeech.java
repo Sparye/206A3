@@ -1,4 +1,5 @@
 import java.io.File;
+
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
@@ -18,6 +19,25 @@ public class TextToSpeech {
 			e1.printStackTrace();
 		}
 		
+		try {
+			String refinedMsg = "\"" + msg + "\"";
+		//	String command = "espeak "+refinedMsg+" -s 100";
+		//String command = "espeak "+msg;
+			String command = "espeak "+refinedMsg+" -s "+speed;
+
+		//	System.out.println(command);
+			ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
+			
+			Process process = pb.start();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	public static void toTestSpeech(String speed)  {
+		String msg = "This is the speed of speaking";
 		try {
 			String refinedMsg = "\"" + msg + "\"";
 		//	String command = "espeak "+refinedMsg+" -s 100";

@@ -6,7 +6,7 @@ import java.util.Scanner;
 public class TextToSpeech {
 	public static void toSpeech(String msg)  {
 		File file = new File("./GameData/Setting/TTS");
-		String speed="100";
+		String speed="160";
 		Scanner scan;
 		try {
 			scan = new Scanner(file);

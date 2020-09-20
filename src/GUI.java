@@ -68,9 +68,9 @@ public class GUI extends Application
 	int ttsSpeed = DEFAULTSPEED;
 	int testSpeed = ttsSpeed;
 	String practiceCategory = "";
-	int attemptsRemaining = 0; // placeholder
-	String practiceQuestion = "Don't edit the game files! :("; // placeholder
-	
+	int attemptsRemaining = 0; 
+	String[] practiceQuestionSet = {"Don't edit the game files! :(","","sorry"};
+
 	@Override
 	public void start(Stage guiStage)
 	{
@@ -90,7 +90,6 @@ public class GUI extends Application
 			} else {
 				attemptsRemaining = Integer.parseInt( attemptLine );
 			}
-			//attemptsRemaining = Integer.parseInt(attemptLine);
 			getAttempts.close();
 			if (attemptsRemaining > 0) {
 				// get practice question
@@ -98,7 +97,8 @@ public class GUI extends Application
 				String practiceQuestionLine = getPracticeQuestion.readLine();
 				getPracticeQuestion.close();
 				if (practiceQuestionLine != null) {
-					practiceQuestion = practiceQuestionLine;
+					String practiceQuestionWhole = practiceQuestionLine;
+					practiceQuestionSet = LineToVar.toVarSet(practiceQuestionWhole);
 				}
 			}
 			// get tts speed
@@ -112,6 +112,7 @@ public class GUI extends Application
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		
 		
 		//  Main Menu setup
 		Group root = new Group();
@@ -325,7 +326,7 @@ public class GUI extends Application
 				categoryTitlePrompt.strokeText( "Practice Module", 270, 100 );
 				
 				// displays the question
-				Text practiceQuestionPrompt = new Text( practiceQuestion );
+				Text practiceQuestionPrompt = new Text( practiceQuestionSet[0] );
 				practiceQuestionPrompt.setWrappingWidth( 800 );
 				practiceQuestionPrompt.setStyle("-fx-font-size: 2.5em; ");
 				practiceQuestionPrompt.setTextAlignment(TextAlignment.CENTER);
@@ -403,7 +404,8 @@ public class GUI extends Application
 						
 						// choose one question randomly
 						Random chooseRandomQuestion = new Random();
-						practiceQuestion = questionArray.get(chooseRandomQuestion.nextInt(questionArray.size()));
+						String practiceQuestionWhole = questionArray.get(chooseRandomQuestion.nextInt(questionArray.size()));
+						practiceQuestionSet = LineToVar.toVarSet(practiceQuestionWhole);
 						
 						// reset attempts
 						attemptsRemaining = 3;
@@ -413,14 +415,14 @@ public class GUI extends Application
 						resetAttempts.close();
 						// save new question
 						PrintWriter saveQuestion = new PrintWriter(new FileWriter(PRACTICEQUESTIONFILE));
-						saveQuestion.println(practiceQuestion);
+						saveQuestion.println(practiceQuestionWhole);
 						saveQuestion.close();
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
 						
 						displayAttempts.setText(attemptsRemaining + "\nAttempts Remaining");
-						practiceQuestionPrompt.setText( practiceQuestion );
+						practiceQuestionPrompt.setText( practiceQuestionSet[0] );
 						
 						practiceQuestionRoot.getChildren().add(menuButton);
 						guiStage.setScene( practiceQuestionScene );
@@ -454,7 +456,7 @@ public class GUI extends Application
 							practiceQuestionRoot.getChildren().remove(practiceLockInButton);
 							practiceQuestionRoot.getChildren().remove(displayAttempts);
 							
-							String answer = "womp womp :(";
+							String answer = practiceQuestionSet[1] + " " + practiceQuestionSet[2];
 							actualAnswer.setText(answer);
 							practiceQuestionRoot.getChildren().add(actualAnswer);
 							
@@ -462,7 +464,7 @@ public class GUI extends Application
 							if (attemptsRemaining == 1) {
 								// make text red and display the first letter
 								answerField.setStyle( buttonStyle + " -fx-text-fill: #B43757;");
-								String firstLetter = "c"; // Placeholder
+								String firstLetter = "" + practiceQuestionSet[2].charAt(0); // Placeholder
 								answerField.setText(firstLetter.toUpperCase());
 							}
 							displayAttempts.setText(attemptsRemaining + "\nAttempts Remaining");

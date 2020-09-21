@@ -11,7 +11,7 @@ public class TextToSpeech {
 		try {
 			scan = new Scanner(file);
 			speed = scan.nextLine();
-			System.out.println(speed);
+			//System.out.println(speed);
 			scan.close();
 		} catch (FileNotFoundException e1) {
 			// TODO Auto-generated catch block
@@ -23,12 +23,17 @@ public class TextToSpeech {
 			String refinedMsg = "\"" + msg + "\"";
 		//	String command = "espeak "+refinedMsg+" -s 100";
 		//String command = "espeak "+msg;
-			String command = "espeak "+refinedMsg+" -s "+speed;
+		//	String command = "espeak "+refinedMsg+" -s "+speed;
 
 		//	System.out.println(command);
+			
+			double duration = 160.0/(Integer.parseInt(speed));
+			String command = "echo $'(Parameter.set `Duration_Stretch " + duration
+					+ ")\n(SayText " + refinedMsg + ")' |  festival --pipe";
+			
 			ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
 			
-			Process process = pb.start();
+			pb.start();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -40,14 +45,19 @@ public class TextToSpeech {
 		String msg = "This is the speed of speaking";
 		try {
 			String refinedMsg = "\"" + msg + "\"";
-		//	String command = "espeak "+refinedMsg+" -s 100";
-		//String command = "espeak "+msg;
-			String command = "espeak "+refinedMsg+" -s "+Integer.toString(speed);
+			
+			//	String command = "espeak "+refinedMsg+" -s 100";
+			//String command = "espeak "+msg;
+			//String command = "espeak "+refinedMsg;
+			//System.out.println(command);
+			
+			double duration = 160.0/speed;
+			String command = "echo $'(Parameter.set `Duration_Stretch " + duration
+					+ ")\n(SayText " + refinedMsg + ")' |  festival --pipe";
 
-			System.out.println(command);
 			ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
 			
-			Process process = pb.start();
+			pb.start();
 
 		} catch (Exception e) {
 			e.printStackTrace();

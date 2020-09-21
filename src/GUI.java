@@ -439,8 +439,10 @@ public class GUI extends Application
 						String[] answerSet = practiceQuestionSet[2].split("/", 0);
 						boolean correct = false;
 						for (int i = 0; i<answerSet.length; i++) {
-							if (answerField.getText().equalsIgnoreCase(practiceQuestionSet[1]+ " " + answerSet[i].strip())) {
+							if (answerField.getText().equalsIgnoreCase(practiceQuestionSet[1]+ " " + answerSet[i].strip())
+								|| answerField.getText().equalsIgnoreCase(answerSet[i].strip())	) {
 								correct = true;
+								break;
 							}
 						}
 						if (correct) {

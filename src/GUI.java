@@ -506,6 +506,8 @@ public class GUI extends Application
 				Group settingsRoot = new Group();
 				Scene settingsScene = new Scene( settingsRoot );
 				
+				testSpeed = ttsSpeed;
+				
 				StackPane settingsBackground = new StackPane();
 				Canvas settingsCanvas = new Canvas( width, height );
 				settingsBackground.setStyle( backgroundStyle );

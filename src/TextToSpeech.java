@@ -31,6 +31,7 @@ public class TextToSpeech {
 			String command = "echo $'(Parameter.set `Duration_Stretch " + duration
 					+ ")\n(SayText " + refinedMsg + ")' |  festival --pipe";
 			
+			
 			ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
 			
 			pb.start();

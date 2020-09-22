@@ -212,6 +212,15 @@ public class GUI extends Application
 			TextToSpeech.toTestSpeech(testSpeed);
 		});
 		
+		//button to speak the question
+		Button hearButton = new Button( "Hear Question" );
+		hearButton.setLayoutX(buttonXPos + 350);
+		hearButton.setLayoutY(buttonYStart + buttonYOffset );
+		hearButton.setPrefSize( buttonXScale/2 , buttonYScale/2 );
+		hearButton.setStyle("-fx-background-color: #003399; -fx-font-size: 1.00em; -fx-text-fill: white; ");
+		hearButton.setOnAction(e-> {
+			TextToSpeech.toSpeech(practiceQuestionSet[0]);
+		});
 		
 		
 		root.getChildren().add(gameButton);
@@ -377,6 +386,7 @@ public class GUI extends Application
 				practiceQuestionRoot.getChildren().add( answerField );
 				practiceQuestionRoot.getChildren().add( practiceLockInButton ); 
 				practiceQuestionRoot.getChildren().add( displayAttempts ); 
+				practiceQuestionRoot.getChildren().add( hearButton );
 
 				practiceLockInButton.setVisible(false);
 				

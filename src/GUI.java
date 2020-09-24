@@ -418,6 +418,7 @@ public class GUI extends Application
 						Random chooseRandomQuestion = new Random();
 						String practiceQuestionWhole = questionArray.get(chooseRandomQuestion.nextInt(questionArray.size()));
 						practiceQuestionSet = LineToVar.toVarSet(practiceQuestionWhole);
+						TextToSpeech.toSpeech(practiceQuestionSet[0]);
 						
 						// reset attempts
 						attemptsRemaining = 3;
@@ -470,6 +471,7 @@ public class GUI extends Application
 							practiceQuestionRoot.getChildren().remove(answerField);
 							practiceQuestionRoot.getChildren().remove(practiceLockInButton);
 							practiceQuestionRoot.getChildren().remove(displayAttempts);
+							practiceQuestionRoot.getChildren().remove(hearButton);
 							
 							String answer = "\n\nCorrect Answer!!\n\nYou Answered:\n" + practiceQuestionSet[1] + " " + practiceQuestionSet[2];
 							practiceQuestionPrompt.setText(practiceQuestionSet[0] + answer);
@@ -481,6 +483,7 @@ public class GUI extends Application
 								practiceQuestionRoot.getChildren().remove(answerField);
 								practiceQuestionRoot.getChildren().remove(practiceLockInButton);
 								practiceQuestionRoot.getChildren().remove(displayAttempts);
+								practiceQuestionRoot.getChildren().remove(hearButton);
 								
 								String answer = "\n\nNo more attempts!\n\nAnswer:\n" + practiceQuestionSet[1] + " " + practiceQuestionSet[2];
 								practiceQuestionPrompt.setText(practiceQuestionSet[0] + answer);

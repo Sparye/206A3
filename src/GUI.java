@@ -363,7 +363,7 @@ public class GUI extends Application
 					// make field text red and display the first letter
 					answerField.setStyle( buttonStyle + " -fx-text-fill: #B43757;");
 					String firstLetter = "c"; // Placeholder
-					answerField.setText(firstLetter.toUpperCase());
+					answerField.setText(practiceQuestionSet[1]+ " " + firstLetter.toUpperCase());
 				} 
 				
 				// display remaining attempts
@@ -418,6 +418,7 @@ public class GUI extends Application
 						Random chooseRandomQuestion = new Random();
 						String practiceQuestionWhole = questionArray.get(chooseRandomQuestion.nextInt(questionArray.size()));
 						practiceQuestionSet = LineToVar.toVarSet(practiceQuestionWhole);
+						answerField.setText(practiceQuestionSet[1]+ " ");
 						TextToSpeech.toSpeech(practiceQuestionSet[0]);
 						
 						// reset attempts
@@ -448,6 +449,8 @@ public class GUI extends Application
 					public void handle(ActionEvent arg0) {
 						// TODO ~ Return to Practice Question Logic
 						practiceQuestionRoot.getChildren().add(menuButton);
+						answerField.setText(practiceQuestionSet[1]+ " ");
+						TextToSpeech.toSpeech(practiceQuestionSet[0]);
 						guiStage.setScene( practiceQuestionScene );
 					}
 				});
@@ -475,6 +478,7 @@ public class GUI extends Application
 							
 							String answer = "\n\nCorrect Answer!!\n\nYou Answered:\n" + practiceQuestionSet[1] + " " + practiceQuestionSet[2];
 							practiceQuestionPrompt.setText(practiceQuestionSet[0] + answer);
+							TextToSpeech.toSpeech("Correct!");
 							attemptsRemaining = 0;
 						} else {
 							// User answered incorrectly
@@ -487,13 +491,16 @@ public class GUI extends Application
 								
 								String answer = "\n\nNo more attempts!\n\nAnswer:\n" + practiceQuestionSet[1] + " " + practiceQuestionSet[2];
 								practiceQuestionPrompt.setText(practiceQuestionSet[0] + answer);
+								TextToSpeech.toSpeech("Incorrect! The answer was " + practiceQuestionSet[1]+ " " + practiceQuestionSet[2]);
 								
 							} else {
+								TextToSpeech.toSpeech("Incorrect!");
+								answerField.setText(practiceQuestionSet[1]+ " ");
 								if (attemptsRemaining == 1) {
 									// make text red and display the first letter
 									answerField.setStyle( buttonStyle + " -fx-text-fill: #B43757;");
 									String firstLetter = "" + practiceQuestionSet[2].charAt(0);
-									answerField.setText(firstLetter.toUpperCase());
+									answerField.setText(practiceQuestionSet[1]+ " " + firstLetter.toUpperCase());
 								}
 								displayAttempts.setText(attemptsRemaining + "\nAttempts Remaining");
 							}
@@ -542,7 +549,7 @@ public class GUI extends Application
 				speedText.setLayoutX( buttonXPos );
 				
 				// TTS speed slider
-				Slider speedSlider = new Slider( 40 , 400 , ttsSpeed );
+				Slider speedSlider = new Slider( 40 , 320 , ttsSpeed );
 				speedSlider.setLayoutX(buttonXPos - 130 );
 				speedSlider.setLayoutY(buttonYStart + 10);
 				speedSlider.setPrefWidth(buttonXScale * 2);

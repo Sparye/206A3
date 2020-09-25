@@ -4,8 +4,8 @@
 
 if [ ! -d "./GameData" ]
 then
-	mkdir -p GameData/{Game/categories/,Practice/,Setting/}
-	touch GameData/{Game/.Score,Practice/Attempt,Practice/Question,Setting/TTS}
+	mkdir -p GameData/{Game/,Practice/,Setting/}
+	touch GameData/{Game/.Score,Game/Questions,Practice/Attempt,Practice/Question,Setting/TTS}
 
 fi
 

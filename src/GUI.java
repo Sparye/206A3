@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -42,6 +43,7 @@ public class GUI extends Application
 	public static final String QUESTIONBANKFILE = "categories";
 	public static final String PRACTICEATTEMPTFILE = "GameData/Practice/Attempt";
 	public static final String PRACTICEQUESTIONFILE = "GameData/Practice/Question";
+	public static final String GAMEQUESTIONSFILE = "GameData/Game/Questions";
 	public static final String TTSSPEEDFILE = "GameData/Setting/TTS";
 	
 	Scene menuScene, gameScene, practiceScene, settingsScene, resetScene;
@@ -254,6 +256,12 @@ public class GUI extends Application
 				gameRoot.getChildren().add(menuButton);
 				
 				// GAME LOGIC HERE ~ TODO
+				
+				// demonstrate some question selector functions
+				QuestionSelector.copyRandomCategories(QUESTIONBANKFILE, GAMEQUESTIONSFILE);
+				QuestionSelector.deleteLinesContaining("100", GAMEQUESTIONSFILE);
+				System.out.println(QuestionSelector.getQuestionSetFromValue("200", "Famous People", GAMEQUESTIONSFILE)[0]);
+				
 				
 				guiStage.setScene( gameScene );
 			}

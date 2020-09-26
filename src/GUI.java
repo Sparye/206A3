@@ -13,6 +13,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -21,6 +22,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -260,23 +262,21 @@ public class GUI extends Application
 				GridPane gameGrid = new GridPane();
 				//Labels for displaying categories in game module
 				Text catLabel1 = new Text("looooooong");
-				Text catLabel2 = new Text("City2");
-				Text catLabel3 = new Text("City3");
+				Text catLabel2 = new Text("Famous People");
+				Text catLabel3 = new Text("looooooooooooooooooooooog");
 				Text catLabel4 = new Text("City4");
 				Text catLabel5 = new Text("City5");
 				
 				for(Text t : Arrays.asList(catLabel1,catLabel2,catLabel3,catLabel4,catLabel5)) {
-					GridPane.setHalignment(t, HPos.CENTER);
+
 					t.setStyle("-fx-font-size: 1.25em; -fx-font-weight: bold");
+					t.setWrappingWidth(125);
+					t.setTextAlignment(TextAlignment.CENTER);
+
 				}
 				gameGrid.setVgap(10);
 				gameGrid.setHgap(30);
-				
-			//	catLabel1.setWrappingWidth( 100 );
-			//	catLabel1.setStyle("-fx-font-size: 2.5em; ");
-			//	practiceQuestionPrompt.setTextAlignment(TextAlignment.CENTER);
-			//	practiceQuestionPrompt.setLayoutY(buttonYStart);
-			//	practiceQuestionPrompt.setLayoutX(200);
+
 				GridPane.setConstraints(catLabel1,0,0);
 				GridPane.setConstraints(catLabel2,1,0);
 				GridPane.setConstraints(catLabel3,2,0);
@@ -284,78 +284,23 @@ public class GUI extends Application
 				GridPane.setConstraints(catLabel5,4,0);
 				
 				//buttons for money grid
-				Button moneyButton11 = new Button("100");
-				Button moneyButton12 = new Button("100");
-				Button moneyButton13 = new Button("100");
-				Button moneyButton14 = new Button("100");
-				Button moneyButton15 = new Button("100");
-				Button moneyButton21 = new Button("200");
-				Button moneyButton22 = new Button("200");
-				Button moneyButton23 = new Button("200");
-				Button moneyButton24 = new Button("200");
-				Button moneyButton25 = new Button("200");
-				Button moneyButton31 = new Button("300");
-				Button moneyButton32 = new Button("300");
-				Button moneyButton33 = new Button("300");
-				Button moneyButton34 = new Button("300");
-				Button moneyButton35 = new Button("300");
-				Button moneyButton41 = new Button("400");
-				Button moneyButton42 = new Button("400");
-				Button moneyButton43 = new Button("400");
-				Button moneyButton44 = new Button("400");
-				Button moneyButton45 = new Button("400");
-				Button moneyButton51 = new Button("500");
-				Button moneyButton52 = new Button("500");
-				Button moneyButton53 = new Button("500");
-				Button moneyButton54 = new Button("500");
-				Button moneyButton55 = new Button("500");
-				
-				for (Button b : Arrays.asList(
-						moneyButton11,moneyButton12,moneyButton13,moneyButton14,moneyButton15,
-						moneyButton21,moneyButton22,moneyButton23,moneyButton24,moneyButton25,
-						moneyButton31,moneyButton32,moneyButton33,moneyButton34,moneyButton35,
-						moneyButton41,moneyButton42,moneyButton43,moneyButton44,moneyButton45,
-						moneyButton51,moneyButton52,moneyButton53,moneyButton54,moneyButton55)) {
+				for(int i=1;i<6;i++) {
+					for(int j=0;j<5;j++) {
+						Button moneyButton = new Button(i+"00");
+						moneyButton.setPrefSize(buttonXScale/2, buttonYScale/2);
+						moneyButton.setStyle("-fx-background-color: #003399; -fx-font-size: 1.75em; -fx-text-fill: white; -fx-font-weight: bold");
+						GridPane.setConstraints(moneyButton,j,i);
+						gameGrid.getChildren().add(moneyButton);
+					}
+
 					
-					b.setPrefSize(buttonXScale/2, buttonYScale/2);
-					b.setStyle("-fx-background-color: #003399; -fx-font-size: 1.75em; -fx-text-fill: white; -fx-font-weight: bold");;
 				}
 				
-			//	moneyButton11.setDisable(true);
-				GridPane.setConstraints(moneyButton11,0,1);
-				GridPane.setConstraints(moneyButton12,1,1);
-				GridPane.setConstraints(moneyButton13,2,1);
-				GridPane.setConstraints(moneyButton14,3,1);
-				GridPane.setConstraints(moneyButton15,4,1);
-				GridPane.setConstraints(moneyButton21,0,2);
-				GridPane.setConstraints(moneyButton22,1,2);
-				GridPane.setConstraints(moneyButton23,2,2);
-				GridPane.setConstraints(moneyButton24,3,2);
-				GridPane.setConstraints(moneyButton25,4,2);
-				GridPane.setConstraints(moneyButton31,0,3);
-				GridPane.setConstraints(moneyButton32,1,3);
-				GridPane.setConstraints(moneyButton33,2,3);
-				GridPane.setConstraints(moneyButton34,3,3);
-				GridPane.setConstraints(moneyButton35,4,3);
-				GridPane.setConstraints(moneyButton41,0,4);
-				GridPane.setConstraints(moneyButton42,1,4);
-				GridPane.setConstraints(moneyButton43,2,4);
-				GridPane.setConstraints(moneyButton44,3,4);
-				GridPane.setConstraints(moneyButton45,4,4);
-				GridPane.setConstraints(moneyButton51,0,5);
-				GridPane.setConstraints(moneyButton52,1,5);
-				GridPane.setConstraints(moneyButton53,2,5);
-				GridPane.setConstraints(moneyButton54,3,5);
-				GridPane.setConstraints(moneyButton55,4,5);
+
 			//	moneyButton55.setId("1");
 			//	moneyButton55.gett;
 				
-				gameGrid.getChildren().addAll(catLabel1,catLabel2,catLabel3,catLabel4,catLabel5,
-						moneyButton11,moneyButton12,moneyButton13,moneyButton14,moneyButton15,
-						moneyButton21,moneyButton22,moneyButton23,moneyButton24,moneyButton25,
-						moneyButton31,moneyButton32,moneyButton33,moneyButton34,moneyButton35,
-						moneyButton41,moneyButton42,moneyButton43,moneyButton44,moneyButton45,
-						moneyButton51,moneyButton52,moneyButton53,moneyButton54,moneyButton55);
+				gameGrid.getChildren().addAll(catLabel1,catLabel2,catLabel3,catLabel4,catLabel5);
 				gameGrid.setLayoutX( buttonXPos -250);
 				gameGrid.setLayoutY(buttonYStart);
 				gameBackground.getChildren().add( gameCanvas );

@@ -261,7 +261,8 @@ public class GUI extends Application
 				QuestionSelector.copyRandomCategories(QUESTIONBANKFILE, GAMEQUESTIONSFILE);
 				QuestionSelector.deleteLinesContaining("100", GAMEQUESTIONSFILE);
 				System.out.println(QuestionSelector.getQuestionSetFromValue("200", "Famous People", GAMEQUESTIONSFILE)[0]);
-				
+				System.out.println(QuestionSelector.getQuestionsRemainingCount(GAMEQUESTIONSFILE).get(1));
+				System.out.println(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(3));
 				
 				guiStage.setScene( gameScene );
 			}

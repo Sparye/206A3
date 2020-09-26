@@ -10,19 +10,9 @@ import java.util.Random;
 
 public class QuestionSelector {
 	public static void copyRandomCategories(String QUESTIONBANKFILE, String GAMEQUESTIONSFILE)  {
-		ArrayList<String> categoryArray = new ArrayList<String>();
 		try {
-			String lineToRead;
-			// Add category names to array list
-			BufferedReader readCategories = new BufferedReader(new FileReader(QUESTIONBANKFILE));
-			while((lineToRead = readCategories.readLine()) != null) {
-				if (lineToRead.indexOf('(') == -1 ) {
-					if (!lineToRead.isBlank()) {
-						categoryArray.add(lineToRead);
-					}
-				}
-			}
-			readCategories.close();
+			
+			ArrayList<String> categoryArray = QuestionSelector.getCategoriesInFile(QUESTIONBANKFILE);
 			// choose five at random
 			Random randomCategory = new Random();
 			Collections.shuffle(categoryArray);
@@ -117,5 +107,53 @@ public class QuestionSelector {
 			e.printStackTrace();
 		}
 		return LineToVar.toVarSet(question);
+	}
+	
+	public static ArrayList<String> getCategoriesInFile(String CATEGORYFILE)  {
+		ArrayList<String> categoryArray = new ArrayList<String>();
+		try {
+				String lineToRead;
+				// Add category names to array list
+				BufferedReader readCategories = new BufferedReader(new FileReader(CATEGORYFILE));
+				while((lineToRead = readCategories.readLine()) != null) {
+					if (lineToRead.indexOf('(') == -1 ) {
+						if (!lineToRead.isBlank()) {
+							categoryArray.add(lineToRead);
+						}
+					}
+				}
+				readCategories.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return categoryArray;
+	}
+	
+	public static ArrayList<Integer> getQuestionsRemainingCount(String QUESTIONFILE) {
+		ArrayList<String> categoryArray = QuestionSelector.getCategoriesInFile(QUESTIONFILE);
+		ArrayList<Integer> questionCountArray = new ArrayList<Integer>();
+		try {
+		for (int i = 0 ; i < categoryArray.size() ; i++) {
+			
+			String line;
+			Integer questionCount = 0;
+			BufferedReader readQuestions = new BufferedReader(new FileReader(QUESTIONFILE));
+			while((line = readQuestions.readLine()) != null) {
+				if (line.equals(categoryArray.get(i))) {
+					break;
+				}
+			}
+			while(((line = readQuestions.readLine()) != null) && (line.indexOf('(') >= 0 )) {
+				questionCount++;
+			}
+				readQuestions.close();
+			questionCountArray.add(questionCount);
+		
+	}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return questionCountArray;
 	}
 }

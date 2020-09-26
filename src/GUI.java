@@ -77,6 +77,7 @@ public class GUI extends Application
 	String practiceCategory = "";
 	int attemptsRemaining = 0; 
 	String[] practiceQuestionSet = {"Don't edit the game files! :(","","sorry"};
+	String[] gameQuestionSet = {"Don't edit the game files! :(","","sorry"};
 
 	@Override
 	public void start(Stage guiStage)
@@ -261,11 +262,12 @@ public class GUI extends Application
 				
 				GridPane gameGrid = new GridPane();
 				//Labels for displaying categories in game module
-				Text catLabel1 = new Text("looooooong");
-				Text catLabel2 = new Text("Famous People");
-				Text catLabel3 = new Text("looooooooooooooooooooooog");
-				Text catLabel4 = new Text("City4");
-				Text catLabel5 = new Text("City5");
+			//	QuestionSelector.copyRandomCategories(QUESTIONBANKFILE, GAMEQUESTIONSFILE);
+				Text catLabel1 = new Text(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(0));
+				Text catLabel2 = new Text(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(1));
+				Text catLabel3 = new Text(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(2));
+				Text catLabel4 = new Text(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(3));
+				Text catLabel5 = new Text(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(4));
 				
 				for(Text t : Arrays.asList(catLabel1,catLabel2,catLabel3,catLabel4,catLabel5)) {
 
@@ -284,16 +286,29 @@ public class GUI extends Application
 				GridPane.setConstraints(catLabel5,4,0);
 				
 				//buttons for money grid
-				for(int i=1;i<6;i++) {
-					for(int j=0;j<5;j++) {
-						Button moneyButton = new Button(i+"00");
+
+				for(int j=0;j<QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).size();j++) {
+					int numQues = QuestionSelector.getQuestionsRemainingCount(GAMEQUESTIONSFILE).get(j);
+						for(int r=1;r<6;r++) {
+						Button moneyButton = new Button(r+"00");
+						moneyButton.setId(Integer.toString(j*10+r));
 						moneyButton.setPrefSize(buttonXScale/2, buttonYScale/2);
 						moneyButton.setStyle("-fx-background-color: #003399; -fx-font-size: 1.75em; -fx-text-fill: white; -fx-font-weight: bold");
-						GridPane.setConstraints(moneyButton,j,i);
-						gameGrid.getChildren().add(moneyButton);
+						moneyButton.setOnAction(e->{
+							System.out.println(QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE)[0]);
+							QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE);	
+						});
+						if((numQues+r)>=6) {
+							GridPane.setConstraints(moneyButton,j,r);
+							gameGrid.getChildren().add(moneyButton);
+						}else {
+							moneyButton.setDisable(true);
+							GridPane.setConstraints(moneyButton,j,r);
+							gameGrid.getChildren().add(moneyButton);
+						}
+
 					}
 
-					
 				}
 				
 
@@ -311,8 +326,8 @@ public class GUI extends Application
 				// GAME LOGIC HERE ~ TODO
 		//		GridPane 
 				// demonstrate some question selector functions
-				QuestionSelector.copyRandomCategories(QUESTIONBANKFILE, GAMEQUESTIONSFILE);
-				QuestionSelector.deleteLinesContaining("100", GAMEQUESTIONSFILE);
+			//	QuestionSelector.copyRandomCategories(QUESTIONBANKFILE, GAMEQUESTIONSFILE);
+			//	QuestionSelector.deleteLinesContaining("100", GAMEQUESTIONSFILE);
 				System.out.println(QuestionSelector.getQuestionSetFromValue("200", "Famous People", GAMEQUESTIONSFILE)[0]);
 				System.out.println(QuestionSelector.getQuestionsRemainingCount(GAMEQUESTIONSFILE).get(1));
 				System.out.println(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(3));

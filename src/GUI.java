@@ -244,6 +244,18 @@ public class GUI extends Application
 		gameLockInButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
 		gameLockInButton.setPrefSize( buttonXScale , buttonYScale );
 		gameLockInButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 1.75em; ");
+		
+		// restart game module button
+		Button restartButton = new Button( "Play again" );
+		restartButton.setLayoutX( buttonXPos );
+		restartButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
+		restartButton.setPrefSize( buttonXScale , buttonYScale );
+		restartButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 1.75em; ");
+		restartButton.setOnAction(e-> {
+			Score.reset(GAMESCOREFILE);
+			QuestionSelector.reset(GAMEQUESTIONSFILE);
+			guiStage.setScene(menuScene);
+		});
 
 		
 		// I dont know button
@@ -252,7 +264,207 @@ public class GUI extends Application
 		dontKnowButton.setLayoutY( buttonYStart + buttonYOffset * 3 );
 		dontKnowButton.setPrefSize( buttonXScale , buttonYScale );
 		dontKnowButton.setStyle("-fx-background-color: #B43757; -fx-font-size: 1.75em; ");
-		dontKnowButton.setOnAction(e-> guiStage.setScene(menuScene));
+		dontKnowButton.setOnAction(e-> {
+
+					Group gameRoot = new Group();
+					Scene gameScene = new Scene( gameRoot );
+					
+					StackPane gameBackground = new StackPane();
+					Canvas gameCanvas = new Canvas( width, height );
+					gameBackground.setStyle( backgroundStyle );
+					
+					GridPane gameGrid = new GridPane();
+					// create new question set when game is reset
+					if(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).size() < 1) {
+						QuestionSelector.copyRandomCategories(QUESTIONBANKFILE, GAMEQUESTIONSFILE);
+					}
+
+					gameGrid.setVgap(10);
+					gameGrid.setHgap(30);		
+					
+					int checktotal=0;
+					for(int c=0;c<QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).size();c++) {
+						checktotal += QuestionSelector.getQuestionsRemainingCount(GAMEQUESTIONSFILE).get(c);
+					}
+					
+					if(checktotal==0) {
+						// display the question
+						Text WinningPrompt=new Text();;
+						try {
+							WinningPrompt.setText( "You have completed all questions!\nYour final score is: "+ Score.getSumAndSave("0") );
+						} catch (FileNotFoundException ev) {
+							// TODO Auto-generated catch block
+							ev.printStackTrace();
+						}
+						WinningPrompt.setWrappingWidth( 800 );
+						WinningPrompt.setStyle("-fx-font-size: 2.5em; ");
+						WinningPrompt.setTextAlignment(TextAlignment.CENTER);
+						WinningPrompt.setLayoutY(buttonYStart);
+						WinningPrompt.setLayoutX(200);
+						
+						
+						gameGrid.setLayoutX( buttonXPos -250);
+						gameGrid.setLayoutY(buttonYStart);
+						gameBackground.getChildren().add( gameCanvas );
+						gameRoot.getChildren().add( gameBackground );
+						gameRoot.getChildren().add(menuButton);
+						gameRoot.getChildren().add(restartButton);
+						gameRoot.getChildren().add(WinningPrompt);
+					//	gameRoot.getChildren().add(gameGrid);
+
+						guiStage.setScene( gameScene );
+					}else {
+						//buttons for money grid
+						for(int j=0;j<QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).size();j++) {
+							//Labels for displaying categories in game module
+							Text catLabel = new Text(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(j));
+							catLabel.setStyle("-fx-font-size: 1.25em; -fx-font-weight: bold");
+							catLabel.setWrappingWidth(125);
+							catLabel.setTextAlignment(TextAlignment.CENTER);
+							GridPane.setConstraints(catLabel,j,0);
+							gameGrid.getChildren().add(catLabel);
+							int numQues = QuestionSelector.getQuestionsRemainingCount(GAMEQUESTIONSFILE).get(j);
+								for(int r=1;r<6;r++) {
+								Button moneyButton = new Button(r+"00");
+								moneyButton.setId(Integer.toString(j*10+r));
+								moneyButton.setPrefSize(buttonXScale/2, buttonYScale/2);
+								moneyButton.setStyle("-fx-background-color: #003399; -fx-font-size: 1.75em; -fx-text-fill: white; -fx-font-weight: bold");
+								moneyButton.setOnAction(eve->{
+									dontKnowButton.setText("Don't know");
+								//	System.out.println(QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE)[0]);
+									gameQuestionSet=QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE);	
+									QuestionSelector.deleteLinesContaining(gameQuestionSet[0], GAMEQUESTIONSFILE);
+									TextToSpeech.toSpeech(gameQuestionSet[0]);
+									try {
+										currentScore=Score.getSumAndSave("0");
+									} catch (FileNotFoundException ev) {
+										// TODO Auto-generated catch block
+										ev.printStackTrace();
+									}
+									//game question scene
+									Group gameQuestionRoot = new Group();
+									Scene gameQuestionScene = new Scene(gameQuestionRoot);
+									
+									StackPane gameQuestionBackground = new StackPane();
+									Canvas gameQuestionCanvas = new Canvas( width, height );
+									gameQuestionBackground.setStyle( backgroundStyle );
+									
+									// game module title
+									GraphicsContext categoryTitlePrompt = gameQuestionCanvas.getGraphicsContext2D();
+									categoryTitlePrompt.setFill( Color.PURPLE );
+									categoryTitlePrompt.setStroke( Color.BLACK );
+									categoryTitlePrompt.setLineWidth(2);
+									categoryTitlePrompt.setFont( titleFont );
+									categoryTitlePrompt.fillText( "Game Module", 270, 100 );
+									categoryTitlePrompt.strokeText( "Game Module", 270, 100 );
+									
+									// display the question
+									Text gameQuestionPrompt = new Text( QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10) );
+									gameQuestionPrompt.setWrappingWidth( 800 );
+									gameQuestionPrompt.setStyle("-fx-font-size: 2.5em; ");
+									gameQuestionPrompt.setTextAlignment(TextAlignment.CENTER);
+									gameQuestionPrompt.setLayoutY(buttonYStart);
+									gameQuestionPrompt.setLayoutX(200);
+									
+									// user answer field
+									TextField answerField = new TextField(gameQuestionSet[1]+ " ");
+									answerField.setLayoutX( buttonXPos - 75 ) ;
+									answerField.setLayoutY( buttonYStart + buttonYOffset );
+									answerField.setPrefSize( 400 , 50 );
+									answerField.setStyle( buttonStyle );
+									
+									//display current score
+									Text displayScore = new Text("Score:\n"+currentScore);
+									displayScore.setLayoutX( 50 );
+									displayScore.setLayoutY( buttonYStart + buttonYOffset * 4 );
+									displayScore.setTextAlignment(TextAlignment.CENTER);
+									displayScore.setStyle("-fx-background-color: #d0e7ff; -fx-font-size: 1.75em; ");
+									
+									answerField.textProperty().addListener(
+											(ObservableValue<? extends String> ov, String old_val, String new_val) -> {
+												gameLockInButton.setVisible(true);
+											}
+											);
+									
+									gameLockInButton.setOnAction(ev -> {
+										if(Attempt.isCorrect(answerField.getText(), gameQuestionSet)) {
+											
+											try {
+												currentScore=Score.getSumAndSave(moneyButton.getText());
+											} catch (FileNotFoundException e1) {
+												// TODO Auto-generated catch block
+												e1.printStackTrace();
+											}
+											
+											gameQuestionRoot.getChildren().remove(answerField);
+											gameQuestionRoot.getChildren().remove(gameLockInButton);
+											gameQuestionRoot.getChildren().remove(hearGameButton);
+											dontKnowButton.setText("Question Grid");
+											String answer="\n\nCorrect Answer!\nCongratulations! You gained "+moneyButton.getText()+" points!";
+											gameQuestionPrompt.setText(answer);
+											TextToSpeech.toSpeech("Correct!");
+										}else {
+											gameQuestionRoot.getChildren().remove(answerField);
+											gameQuestionRoot.getChildren().remove(gameLockInButton);
+											gameQuestionRoot.getChildren().remove(hearGameButton);
+											dontKnowButton.setText("Question Grid");
+											String answer="\n\nUnfortunately,the correct answer is "+gameQuestionSet[2]+".";
+											gameQuestionPrompt.setText(answer);
+											TextToSpeech.toSpeech("Incorrect");
+										}
+									});
+									
+									gameQuestionBackground.getChildren().add( gameQuestionCanvas );
+									gameQuestionRoot.getChildren().add( gameQuestionBackground );
+									gameQuestionRoot.getChildren().add( gameQuestionPrompt );
+									gameQuestionRoot.getChildren().add( answerField );
+									gameQuestionRoot.getChildren().add( gameLockInButton );
+									gameQuestionRoot.getChildren().add( displayScore );
+									gameQuestionRoot.getChildren().add( hearGameButton );
+									gameQuestionRoot.getChildren().add( dontKnowButton );
+									
+									
+									
+									
+									guiStage.setScene(gameQuestionScene);
+									
+								});
+								if((numQues+r)==6) {
+									GridPane.setConstraints(moneyButton,j,r);
+									gameGrid.getChildren().add(moneyButton);
+								}else {
+									moneyButton.setDisable(true);
+									GridPane.setConstraints(moneyButton,j,r);
+									gameGrid.getChildren().add(moneyButton);
+								}
+
+							}
+
+						}
+						
+
+						
+						gameGrid.setLayoutX( buttonXPos -250);
+						gameGrid.setLayoutY(buttonYStart);
+						gameBackground.getChildren().add( gameCanvas );
+						gameRoot.getChildren().add( gameBackground );
+						gameRoot.getChildren().add(menuButton);
+						gameRoot.getChildren().add(gameGrid);
+
+						guiStage.setScene( gameScene );
+						
+						
+
+					}
+					
+					
+					
+					
+					
+			}
+		);
+		
+
 		
 		
 		
@@ -281,150 +493,187 @@ public class GUI extends Application
 				}
 
 				gameGrid.setVgap(10);
-				gameGrid.setHgap(30);			
-				//buttons for money grid
+				gameGrid.setHgap(30);		
+				
+				int checktotal=0;
+				for(int c=0;c<QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).size();c++) {
+					checktotal += QuestionSelector.getQuestionsRemainingCount(GAMEQUESTIONSFILE).get(c);
+				}
+				
+				if(checktotal==0) {
+					// display the question
+					Text WinningPrompt=new Text();;
+					try {
+						WinningPrompt.setText( "You have completed all questions!\nYour final score is: "+ Score.getSumAndSave("0") );
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					WinningPrompt.setWrappingWidth( 800 );
+					WinningPrompt.setStyle("-fx-font-size: 2.5em; ");
+					WinningPrompt.setTextAlignment(TextAlignment.CENTER);
+					WinningPrompt.setLayoutY(buttonYStart);
+					WinningPrompt.setLayoutX(200);
+					
+					
+					gameGrid.setLayoutX( buttonXPos -250);
+					gameGrid.setLayoutY(buttonYStart);
+					gameBackground.getChildren().add( gameCanvas );
+					gameRoot.getChildren().add( gameBackground );
+					gameRoot.getChildren().add(menuButton);
+					gameRoot.getChildren().add(restartButton);
+					gameRoot.getChildren().add(WinningPrompt);
+				//	gameRoot.getChildren().add(gameGrid);
 
-				for(int j=0;j<QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).size();j++) {
-					//Labels for displaying categories in game module
-					Text catLabel = new Text(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(j));
-					catLabel.setStyle("-fx-font-size: 1.25em; -fx-font-weight: bold");
-					catLabel.setWrappingWidth(125);
-					catLabel.setTextAlignment(TextAlignment.CENTER);
-					GridPane.setConstraints(catLabel,j,0);
-					gameGrid.getChildren().add(catLabel);
-					int numQues = QuestionSelector.getQuestionsRemainingCount(GAMEQUESTIONSFILE).get(j);
-						for(int r=1;r<6;r++) {
-						Button moneyButton = new Button(r+"00");
-						moneyButton.setId(Integer.toString(j*10+r));
-						moneyButton.setPrefSize(buttonXScale/2, buttonYScale/2);
-						moneyButton.setStyle("-fx-background-color: #003399; -fx-font-size: 1.75em; -fx-text-fill: white; -fx-font-weight: bold");
-						moneyButton.setOnAction(e->{
-							dontKnowButton.setText("Don't know");
-						//	System.out.println(QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE)[0]);
-							gameQuestionSet=QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE);	
-							QuestionSelector.deleteLinesContaining(gameQuestionSet[0], GAMEQUESTIONSFILE);
-							TextToSpeech.toSpeech(gameQuestionSet[0]);
-							try {
-								currentScore=Score.getSumAndSave("0");
-							} catch (FileNotFoundException ev) {
-								// TODO Auto-generated catch block
-								ev.printStackTrace();
-							}
-							//game question scene
-							Group gameQuestionRoot = new Group();
-							Scene gameQuestionScene = new Scene(gameQuestionRoot);
-							
-							StackPane gameQuestionBackground = new StackPane();
-							Canvas gameQuestionCanvas = new Canvas( width, height );
-							gameQuestionBackground.setStyle( backgroundStyle );
-							
-							// game module title
-							GraphicsContext categoryTitlePrompt = gameQuestionCanvas.getGraphicsContext2D();
-							categoryTitlePrompt.setFill( Color.PURPLE );
-							categoryTitlePrompt.setStroke( Color.BLACK );
-							categoryTitlePrompt.setLineWidth(2);
-							categoryTitlePrompt.setFont( titleFont );
-							categoryTitlePrompt.fillText( "Game Module", 270, 100 );
-							categoryTitlePrompt.strokeText( "Game Module", 270, 100 );
-							
-							// display the question
-							Text gameQuestionPrompt = new Text( QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10) );
-							gameQuestionPrompt.setWrappingWidth( 800 );
-							gameQuestionPrompt.setStyle("-fx-font-size: 2.5em; ");
-							gameQuestionPrompt.setTextAlignment(TextAlignment.CENTER);
-							gameQuestionPrompt.setLayoutY(buttonYStart);
-							gameQuestionPrompt.setLayoutX(200);
-							
-							// user answer field
-							TextField answerField = new TextField(gameQuestionSet[1]+ " ");
-							answerField.setLayoutX( buttonXPos - 75 ) ;
-							answerField.setLayoutY( buttonYStart + buttonYOffset );
-							answerField.setPrefSize( 400 , 50 );
-							answerField.setStyle( buttonStyle );
-							
-							//display current score
-							Text displayScore = new Text("Score:\n"+currentScore);
-							displayScore.setLayoutX( 50 );
-							displayScore.setLayoutY( buttonYStart + buttonYOffset * 4 );
-							displayScore.setTextAlignment(TextAlignment.CENTER);
-							displayScore.setStyle("-fx-background-color: #d0e7ff; -fx-font-size: 1.75em; ");
-							
-							answerField.textProperty().addListener(
-									(ObservableValue<? extends String> ov, String old_val, String new_val) -> {
-										gameLockInButton.setVisible(true);
-									}
-									);
-							
-							gameLockInButton.setOnAction(ev -> {
-								if(Attempt.isCorrect(answerField.getText(), gameQuestionSet)) {
-									
-									try {
-										currentScore=Score.getSumAndSave(moneyButton.getText());
-									} catch (FileNotFoundException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									}
-									
-									gameQuestionRoot.getChildren().remove(answerField);
-									gameQuestionRoot.getChildren().remove(gameLockInButton);
-									gameQuestionRoot.getChildren().remove(hearGameButton);
-									dontKnowButton.setText("Question Grid");
-									String answer="\n\nCorrect Answer!\nCongratulations! You gained "+moneyButton.getText()+" points!";
-									gameQuestionPrompt.setText(answer);
-									TextToSpeech.toSpeech("Correct!");
-								}else {
-									gameQuestionRoot.getChildren().remove(answerField);
-									gameQuestionRoot.getChildren().remove(gameLockInButton);
-									gameQuestionRoot.getChildren().remove(hearGameButton);
-									dontKnowButton.setText("Question Grid");
-									String answer="\n\nUnfortunately,the correct answer is "+gameQuestionSet[2]+".";
-									gameQuestionPrompt.setText(answer);
-									TextToSpeech.toSpeech("Incorrect");
+					guiStage.setScene( gameScene );
+				}else {
+					//buttons for money grid
+					for(int j=0;j<QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).size();j++) {
+						//Labels for displaying categories in game module
+						Text catLabel = new Text(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(j));
+						catLabel.setStyle("-fx-font-size: 1.25em; -fx-font-weight: bold");
+						catLabel.setWrappingWidth(125);
+						catLabel.setTextAlignment(TextAlignment.CENTER);
+						GridPane.setConstraints(catLabel,j,0);
+						gameGrid.getChildren().add(catLabel);
+						int numQues = QuestionSelector.getQuestionsRemainingCount(GAMEQUESTIONSFILE).get(j);
+							for(int r=1;r<6;r++) {
+							Button moneyButton = new Button(r+"00");
+							moneyButton.setId(Integer.toString(j*10+r));
+							moneyButton.setPrefSize(buttonXScale/2, buttonYScale/2);
+							moneyButton.setStyle("-fx-background-color: #003399; -fx-font-size: 1.75em; -fx-text-fill: white; -fx-font-weight: bold");
+							moneyButton.setOnAction(e->{
+								dontKnowButton.setText("Don't know");
+							//	System.out.println(QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE)[0]);
+								gameQuestionSet=QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE);	
+								QuestionSelector.deleteLinesContaining(gameQuestionSet[0], GAMEQUESTIONSFILE);
+								TextToSpeech.toSpeech(gameQuestionSet[0]);
+								try {
+									currentScore=Score.getSumAndSave("0");
+								} catch (FileNotFoundException ev) {
+									// TODO Auto-generated catch block
+									ev.printStackTrace();
 								}
+								//game question scene
+								Group gameQuestionRoot = new Group();
+								Scene gameQuestionScene = new Scene(gameQuestionRoot);
+								
+								StackPane gameQuestionBackground = new StackPane();
+								Canvas gameQuestionCanvas = new Canvas( width, height );
+								gameQuestionBackground.setStyle( backgroundStyle );
+								
+								// game module title
+								GraphicsContext categoryTitlePrompt = gameQuestionCanvas.getGraphicsContext2D();
+								categoryTitlePrompt.setFill( Color.PURPLE );
+								categoryTitlePrompt.setStroke( Color.BLACK );
+								categoryTitlePrompt.setLineWidth(2);
+								categoryTitlePrompt.setFont( titleFont );
+								categoryTitlePrompt.fillText( "Game Module", 270, 100 );
+								categoryTitlePrompt.strokeText( "Game Module", 270, 100 );
+								
+								// display the question
+								Text gameQuestionPrompt = new Text( QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10) );
+								gameQuestionPrompt.setWrappingWidth( 800 );
+								gameQuestionPrompt.setStyle("-fx-font-size: 2.5em; ");
+								gameQuestionPrompt.setTextAlignment(TextAlignment.CENTER);
+								gameQuestionPrompt.setLayoutY(buttonYStart);
+								gameQuestionPrompt.setLayoutX(200);
+								
+								// user answer field
+								TextField answerField = new TextField(gameQuestionSet[1]+ " ");
+								answerField.setLayoutX( buttonXPos - 75 ) ;
+								answerField.setLayoutY( buttonYStart + buttonYOffset );
+								answerField.setPrefSize( 400 , 50 );
+								answerField.setStyle( buttonStyle );
+								
+								//display current score
+								Text displayScore = new Text("Score:\n"+currentScore);
+								displayScore.setLayoutX( 50 );
+								displayScore.setLayoutY( buttonYStart + buttonYOffset * 4 );
+								displayScore.setTextAlignment(TextAlignment.CENTER);
+								displayScore.setStyle("-fx-background-color: #d0e7ff; -fx-font-size: 1.75em; ");
+								
+								answerField.textProperty().addListener(
+										(ObservableValue<? extends String> ov, String old_val, String new_val) -> {
+											gameLockInButton.setVisible(true);
+										}
+										);
+								
+								gameLockInButton.setOnAction(ev -> {
+									if(Attempt.isCorrect(answerField.getText(), gameQuestionSet)) {
+										
+										try {
+											currentScore=Score.getSumAndSave(moneyButton.getText());
+										} catch (FileNotFoundException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										}
+										
+										gameQuestionRoot.getChildren().remove(answerField);
+										gameQuestionRoot.getChildren().remove(gameLockInButton);
+										gameQuestionRoot.getChildren().remove(hearGameButton);
+										dontKnowButton.setText("Question Grid");
+										String answer="\n\nCorrect Answer!\nCongratulations! You gained "+moneyButton.getText()+" points!";
+										gameQuestionPrompt.setText(answer);
+										TextToSpeech.toSpeech("Correct!");
+									}else {
+										gameQuestionRoot.getChildren().remove(answerField);
+										gameQuestionRoot.getChildren().remove(gameLockInButton);
+										gameQuestionRoot.getChildren().remove(hearGameButton);
+										dontKnowButton.setText("Question Grid");
+										String answer="\n\nUnfortunately,the correct answer is "+gameQuestionSet[2]+".";
+										gameQuestionPrompt.setText(answer);
+										TextToSpeech.toSpeech("Incorrect");
+									}
+								});
+								
+								gameQuestionBackground.getChildren().add( gameQuestionCanvas );
+								gameQuestionRoot.getChildren().add( gameQuestionBackground );
+								gameQuestionRoot.getChildren().add( gameQuestionPrompt );
+								gameQuestionRoot.getChildren().add( answerField );
+								gameQuestionRoot.getChildren().add( gameLockInButton );
+								gameQuestionRoot.getChildren().add( displayScore );
+								gameQuestionRoot.getChildren().add( hearGameButton );
+								gameQuestionRoot.getChildren().add( dontKnowButton );
+								
+								
+								
+								
+								guiStage.setScene(gameQuestionScene);
+								
 							});
-							
-							gameQuestionBackground.getChildren().add( gameQuestionCanvas );
-							gameQuestionRoot.getChildren().add( gameQuestionBackground );
-							gameQuestionRoot.getChildren().add( gameQuestionPrompt );
-							gameQuestionRoot.getChildren().add( answerField );
-							gameQuestionRoot.getChildren().add( gameLockInButton );
-							gameQuestionRoot.getChildren().add( displayScore );
-							gameQuestionRoot.getChildren().add( hearGameButton );
-							gameQuestionRoot.getChildren().add( dontKnowButton );
-							
-							
-							
-							
-							guiStage.setScene(gameQuestionScene);
-							
-						});
-						if((numQues+r)==6) {
-							GridPane.setConstraints(moneyButton,j,r);
-							gameGrid.getChildren().add(moneyButton);
-						}else {
-							moneyButton.setDisable(true);
-							GridPane.setConstraints(moneyButton,j,r);
-							gameGrid.getChildren().add(moneyButton);
+							if((numQues+r)==6) {
+								GridPane.setConstraints(moneyButton,j,r);
+								gameGrid.getChildren().add(moneyButton);
+							}else {
+								moneyButton.setDisable(true);
+								GridPane.setConstraints(moneyButton,j,r);
+								gameGrid.getChildren().add(moneyButton);
+							}
+
 						}
 
 					}
+					
+
+					
+					gameGrid.setLayoutX( buttonXPos -250);
+					gameGrid.setLayoutY(buttonYStart);
+					gameBackground.getChildren().add( gameCanvas );
+					gameRoot.getChildren().add( gameBackground );
+					gameRoot.getChildren().add(menuButton);
+					gameRoot.getChildren().add(gameGrid);
+
+					guiStage.setScene( gameScene );
+					
+					
 
 				}
-				
-
-				
-				gameGrid.setLayoutX( buttonXPos -250);
-				gameGrid.setLayoutY(buttonYStart);
-				gameBackground.getChildren().add( gameCanvas );
-				gameRoot.getChildren().add( gameBackground );
-				gameRoot.getChildren().add(menuButton);
-				gameRoot.getChildren().add(gameGrid);
-
-				guiStage.setScene( gameScene );
+				}
 				
 				
-
-			}
+				
+				
 		});
 			
 		practiceButton.setOnAction(new EventHandler<ActionEvent>() {

@@ -156,4 +156,14 @@ public class QuestionSelector {
 		}
 		return questionCountArray;
 	}
+	
+	public static void reset(String GAMEQUESTIONSFILE) {
+		try {
+			PrintWriter resetGames = new PrintWriter(new FileWriter(GAMEQUESTIONSFILE));
+			resetGames.println("");
+			resetGames.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

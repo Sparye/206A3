@@ -1,6 +1,9 @@
 import java.io.File;
 
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class TextToSpeech {
@@ -64,5 +67,15 @@ public class TextToSpeech {
 			e.printStackTrace();
 		}
 
+	}
+	
+	public static void save(int speed, String TTSSPEEDFILE) {
+		try {
+			PrintWriter saveSpeed = new PrintWriter(new FileWriter(TTSSPEEDFILE));
+			saveSpeed.println(speed + "");
+			saveSpeed.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 	}
 }

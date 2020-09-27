@@ -1,22 +1,18 @@
 
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.HPos;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -25,7 +21,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -52,6 +47,7 @@ public class GUI extends Application
 	public static final String PRACTICEATTEMPTFILE = "GameData/Practice/Attempt";
 	public static final String PRACTICEQUESTIONFILE = "GameData/Practice/Question";
 	public static final String GAMEQUESTIONSFILE = "GameData/Game/Questions";
+	public static final String GAMESCOREFILE = "GameData/Game/.Score";
 	public static final String TTSSPEEDFILE = "GameData/Setting/TTS";
 	
 	Scene menuScene, gameScene, practiceScene, settingsScene, resetScene;
@@ -96,9 +92,7 @@ public class GUI extends Application
 			BufferedReader getAttempts = new BufferedReader(new FileReader(PRACTICEATTEMPTFILE));
 			String attemptLine = getAttempts.readLine();
 			if (attemptLine == null) {
-				PrintWriter saveAttempts = new PrintWriter(new FileWriter(PRACTICEATTEMPTFILE));
-				saveAttempts.println(attemptsRemaining + "");
-				saveAttempts.close();
+				Attempt.save(attemptsRemaining, PRACTICEATTEMPTFILE);
 			} else {
 				attemptsRemaining = Integer.parseInt( attemptLine );
 			}
@@ -268,15 +262,6 @@ public class GUI extends Application
 		
 		guiStage.setScene( menuScene );
 		
-		// reset notify
-		Text resetHappenedText = new Text( "Reset Performed!" );
-		resetHappenedText.setWrappingWidth( 800 );
-		resetHappenedText.setStyle("-fx-font-size: 1.7em; ");
-		resetHappenedText.setTextAlignment(TextAlignment.CENTER);
-		resetHappenedText.setLayoutY(buttonYStart + buttonYOffset * 2 + 50);
-		resetHappenedText.setLayoutX(200);
-		
-
 		// button handlers
 		gameButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -289,9 +274,8 @@ public class GUI extends Application
 				gameBackground.setStyle( backgroundStyle );
 				
 				GridPane gameGrid = new GridPane();
-				//Labels for displaying categories in game module
-				File questionFile = new File(GAMEQUESTIONSFILE);
-				if(questionFile.length()==0) {
+				// create new question set when game is reset
+				if(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).size() < 1) {
 					QuestionSelector.copyRandomCategories(QUESTIONBANKFILE, GAMEQUESTIONSFILE);
 				}
 
@@ -303,6 +287,7 @@ public class GUI extends Application
 				//buttons for money grid
 
 				for(int j=0;j<QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).size();j++) {
+					//Labels for displaying categories in game module
 					Text catLabel = new Text(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(j));
 					catLabel.setStyle("-fx-font-size: 1.25em; -fx-font-weight: bold");
 					catLabel.setWrappingWidth(125);
@@ -321,7 +306,7 @@ public class GUI extends Application
 							QuestionSelector.deleteLinesContaining(gameQuestionSet[0], GAMEQUESTIONSFILE);
 							TextToSpeech.toSpeech(gameQuestionSet[0]);
 							try {
-								currentScore=Score.readAndWriteScore("0");
+								currentScore=Score.getSumAndSave("0");
 							} catch (FileNotFoundException ev) {
 								// TODO Auto-generated catch block
 								ev.printStackTrace();
@@ -549,7 +534,6 @@ public class GUI extends Application
 				practiceConfirmButton.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent arg0) {
-						// TODO ~ New Practice Question Logic
 						
 						// make an array of questions
 						ArrayList<String> questionArray = new ArrayList<String>();
@@ -603,7 +587,6 @@ public class GUI extends Application
 				practiceReturnButton.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent arg0) {
-						// TODO ~ Return to Practice Question Logic
 						practiceQuestionRoot.getChildren().add(menuButton);
 						answerField.setText(practiceQuestionSet[1]+ " ");
 						TextToSpeech.toSpeech(practiceQuestionSet[0]);
@@ -615,17 +598,7 @@ public class GUI extends Application
 					@Override
 					public void handle(ActionEvent arg0) {
 						
-						// A "/" indicates multiple valid answers
-						String[] answerSet = practiceQuestionSet[2].split("/", 0);
-						boolean correct = false;
-						for (int i = 0; i<answerSet.length; i++) {
-							if (answerField.getText().equalsIgnoreCase(practiceQuestionSet[1]+ " " + answerSet[i].strip())
-								|| answerField.getText().equalsIgnoreCase(answerSet[i].strip())	) {
-								correct = true;
-								break;
-							}
-						}
-						if (correct) {
+						if (Attempt.isCorrect(answerField.getText(), practiceQuestionSet)) {
 							// User answered correctly
 							practiceQuestionRoot.getChildren().remove(answerField);
 							practiceQuestionRoot.getChildren().remove(practiceLockInButton);
@@ -661,13 +634,8 @@ public class GUI extends Application
 								displayAttempts.setText(attemptsRemaining + "\nAttempts Remaining");
 							}
 							}
-							try {
-								PrintWriter saveAttempts = new PrintWriter(new FileWriter(PRACTICEATTEMPTFILE));
-								saveAttempts.println(attemptsRemaining + "");
-								saveAttempts.close();
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
+						
+						Attempt.save(attemptsRemaining, PRACTICEATTEMPTFILE);
 							
 					}
 				});
@@ -728,7 +696,6 @@ public class GUI extends Application
 				settingsRoot.getChildren().add( saveSettingsButton );
 				settingsRoot.getChildren().add( testSpeedButton );
 				
-				// SETTINGS LOGIC HERE ~ TODO
 				
 				guiStage.setScene( settingsScene );
 			}
@@ -768,13 +735,11 @@ public class GUI extends Application
 				resetText.setLayoutY(buttonYStart + 30);
 				resetText.setLayoutX(200);
 				
-				resetConfirmButton.setVisible(true);
-				resetHappenedText.setVisible(false);
+				resetConfirmButton.setDisable(false);
 				
 				resetBackground.getChildren().add( resetCanvas );
 				resetRoot.getChildren().add( resetBackground );
 				resetRoot.getChildren().add( resetConfirmButton );
-				resetRoot.getChildren().add( resetHappenedText );
 				resetRoot.getChildren().add( resetText );
 				resetRoot.getChildren().add(menuButton);
 				
@@ -785,17 +750,15 @@ public class GUI extends Application
 		resetConfirmButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				// reset practice module
+				
 				attemptsRemaining = 0;
-				try {
-					PrintWriter saveAttempts = new PrintWriter(new FileWriter(PRACTICEATTEMPTFILE));
-					saveAttempts.println(attemptsRemaining + "");
-					saveAttempts.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				resetConfirmButton.setVisible(false);
-				resetHappenedText.setVisible(true);
+				currentScore = 0;
+				
+				Attempt.save(attemptsRemaining, PRACTICEATTEMPTFILE);
+				QuestionSelector.reset(GAMEQUESTIONSFILE);
+				Score.reset(GAMESCOREFILE);
+				
+				resetConfirmButton.setDisable(true);
 			}
 		});
 		
@@ -805,15 +768,9 @@ public class GUI extends Application
 				
 				saveSettingsButton.setVisible(false);
 				// save tts speed
-				try {
 					ttsSpeed = testSpeed;
-					PrintWriter saveSpeed = new PrintWriter(new FileWriter(TTSSPEEDFILE));
-					saveSpeed.println(ttsSpeed + "");
-					saveSpeed.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-
+					TextToSpeech.save(ttsSpeed,TTSSPEEDFILE);
+				
 			}
 		});
 		guiStage.show();

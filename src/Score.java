@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class Score {
-    public static Integer readAndWriteScore(String selectedPoint) throws FileNotFoundException {
+    public static Integer getSumAndSave(String selectedPoint) throws FileNotFoundException {
     	File file =new File("./GameData/Game/.Score");
     	Scanner scan = new Scanner(file);
     	int currentWinning = Integer.parseInt(scan.nextLine());
@@ -28,5 +28,16 @@ public class Score {
     	
     	return currentWinning;
 
+    }
+    
+    public static void reset(String GAMESCOREFILE) {
+    	PrintWriter resetScore;
+		try {
+			resetScore = new PrintWriter(new FileWriter(GAMESCOREFILE));
+			resetScore.println("0");
+			resetScore.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     }
 }

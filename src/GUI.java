@@ -1,5 +1,8 @@
+
+
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -78,6 +81,7 @@ public class GUI extends Application
 	int attemptsRemaining = 0; 
 	String[] practiceQuestionSet = {"Don't edit the game files! :(","","sorry"};
 	String[] gameQuestionSet = {"Don't edit the game files! :(","","sorry"};
+	int currentScore = 0;
 
 	@Override
 	public void start(Stage guiStage)
@@ -230,7 +234,30 @@ public class GUI extends Application
 			TextToSpeech.toSpeech(practiceQuestionSet[0]);
 		});
 		
-
+		//button to speak the game question
+		Button hearGameButton = new Button( "Hear Question" );
+		hearGameButton.setLayoutX(buttonXPos + 350);
+		hearGameButton.setLayoutY(buttonYStart + buttonYOffset );
+		hearGameButton.setPrefSize( buttonXScale/2 , buttonYScale/2 );
+		hearGameButton.setStyle("-fx-background-color: #003399; -fx-font-size: 1.00em; -fx-text-fill: white; ");
+		hearGameButton.setOnAction(e-> {
+			TextToSpeech.toSpeech(gameQuestionSet[0]);
+		});
+		
+		// button used to lock in a game question attempt
+		Button gameLockInButton = new Button( "I'm Sure!" );
+		gameLockInButton.setLayoutX( buttonXPos );
+		gameLockInButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
+		gameLockInButton.setPrefSize( buttonXScale , buttonYScale );
+		gameLockInButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 1.75em; ");
+		
+		// I dont know button
+		Button dontKnowButton = new Button( "I don't know" );
+		dontKnowButton.setLayoutX( buttonXPos );
+		dontKnowButton.setLayoutY( buttonYStart + buttonYOffset * 3 );
+		dontKnowButton.setPrefSize( buttonXScale , buttonYScale );
+		dontKnowButton.setStyle("-fx-background-color: #B43757; -fx-font-size: 1.75em; ");
+		dontKnowButton.setOnAction(e-> guiStage.setScene(menuScene));
 		
 		
 		
@@ -249,6 +276,7 @@ public class GUI extends Application
 		resetHappenedText.setLayoutY(buttonYStart + buttonYOffset * 2 + 50);
 		resetHappenedText.setLayoutX(200);
 		
+
 		// button handlers
 		gameButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -262,32 +290,25 @@ public class GUI extends Application
 				
 				GridPane gameGrid = new GridPane();
 				//Labels for displaying categories in game module
-			//	QuestionSelector.copyRandomCategories(QUESTIONBANKFILE, GAMEQUESTIONSFILE);
-				Text catLabel1 = new Text(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(0));
-				Text catLabel2 = new Text(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(1));
-				Text catLabel3 = new Text(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(2));
-				Text catLabel4 = new Text(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(3));
-				Text catLabel5 = new Text(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(4));
-				
-				for(Text t : Arrays.asList(catLabel1,catLabel2,catLabel3,catLabel4,catLabel5)) {
-
-					t.setStyle("-fx-font-size: 1.25em; -fx-font-weight: bold");
-					t.setWrappingWidth(125);
-					t.setTextAlignment(TextAlignment.CENTER);
-
+				File questionFile = new File(GAMEQUESTIONSFILE);
+				if(questionFile.length()==0) {
+					QuestionSelector.copyRandomCategories(QUESTIONBANKFILE, GAMEQUESTIONSFILE);
 				}
+
 				gameGrid.setVgap(10);
 				gameGrid.setHgap(30);
 
-				GridPane.setConstraints(catLabel1,0,0);
-				GridPane.setConstraints(catLabel2,1,0);
-				GridPane.setConstraints(catLabel3,2,0);
-				GridPane.setConstraints(catLabel4,3,0);
-				GridPane.setConstraints(catLabel5,4,0);
+
 				
 				//buttons for money grid
 
 				for(int j=0;j<QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).size();j++) {
+					Text catLabel = new Text(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(j));
+					catLabel.setStyle("-fx-font-size: 1.25em; -fx-font-weight: bold");
+					catLabel.setWrappingWidth(125);
+					catLabel.setTextAlignment(TextAlignment.CENTER);
+					GridPane.setConstraints(catLabel,j,0);
+					gameGrid.getChildren().add(catLabel);
 					int numQues = QuestionSelector.getQuestionsRemainingCount(GAMEQUESTIONSFILE).get(j);
 						for(int r=1;r<6;r++) {
 						Button moneyButton = new Button(r+"00");
@@ -295,10 +316,77 @@ public class GUI extends Application
 						moneyButton.setPrefSize(buttonXScale/2, buttonYScale/2);
 						moneyButton.setStyle("-fx-background-color: #003399; -fx-font-size: 1.75em; -fx-text-fill: white; -fx-font-weight: bold");
 						moneyButton.setOnAction(e->{
-							System.out.println(QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE)[0]);
-							QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE);	
+						//	System.out.println(QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE)[0]);
+							gameQuestionSet=QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE);	
+							QuestionSelector.deleteLinesContaining(gameQuestionSet[0], GAMEQUESTIONSFILE);
+							TextToSpeech.toSpeech(gameQuestionSet[0]);
+							try {
+								currentScore=Score.readAndWriteScore("0");
+							} catch (FileNotFoundException ev) {
+								// TODO Auto-generated catch block
+								ev.printStackTrace();
+							}
+							//game question scene
+							Group gameQuestionRoot = new Group();
+							Scene gameQuestionScene = new Scene(gameQuestionRoot);
+							
+							StackPane gameQuestionBackground = new StackPane();
+							Canvas gameQuestionCanvas = new Canvas( width, height );
+							gameQuestionBackground.setStyle( backgroundStyle );
+							
+							// game module title
+							GraphicsContext categoryTitlePrompt = gameQuestionCanvas.getGraphicsContext2D();
+							categoryTitlePrompt.setFill( Color.PURPLE );
+							categoryTitlePrompt.setStroke( Color.BLACK );
+							categoryTitlePrompt.setLineWidth(2);
+							categoryTitlePrompt.setFont( titleFont );
+							categoryTitlePrompt.fillText( "Game Module", 270, 100 );
+							categoryTitlePrompt.strokeText( "Game Module", 270, 100 );
+							
+							// display the question
+							Text gameQuestionPrompt = new Text( gameQuestionSet[0] );
+							gameQuestionPrompt.setWrappingWidth( 800 );
+							gameQuestionPrompt.setStyle("-fx-font-size: 2.5em; ");
+							gameQuestionPrompt.setTextAlignment(TextAlignment.CENTER);
+							gameQuestionPrompt.setLayoutY(buttonYStart);
+							gameQuestionPrompt.setLayoutX(200);
+							
+							// user answer field
+							TextField answerField = new TextField(gameQuestionSet[1]+ " ");
+							answerField.setLayoutX( buttonXPos - 75 ) ;
+							answerField.setLayoutY( buttonYStart + buttonYOffset );
+							answerField.setPrefSize( 400 , 50 );
+							answerField.setStyle( buttonStyle );
+							
+							//display current score
+							Text displayScore = new Text("Score:\n"+currentScore);
+							displayScore.setLayoutX( 50 );
+							displayScore.setLayoutY( buttonYStart + buttonYOffset * 4 );
+							displayScore.setTextAlignment(TextAlignment.CENTER);
+							displayScore.setStyle("-fx-background-color: #d0e7ff; -fx-font-size: 1.75em; ");
+							
+							answerField.textProperty().addListener(
+									(ObservableValue<? extends String> ov, String old_val, String new_val) -> {
+										gameLockInButton.setVisible(true);
+									}
+									);
+							
+							gameQuestionBackground.getChildren().add( gameQuestionCanvas );
+							gameQuestionRoot.getChildren().add( gameQuestionBackground );
+							gameQuestionRoot.getChildren().add( gameQuestionPrompt );
+							gameQuestionRoot.getChildren().add( answerField );
+							gameQuestionRoot.getChildren().add( gameLockInButton );
+							gameQuestionRoot.getChildren().add( displayScore );
+							gameQuestionRoot.getChildren().add( hearGameButton );
+							gameQuestionRoot.getChildren().add( dontKnowButton );
+							
+							
+							
+							
+							guiStage.setScene(gameQuestionScene);
+							
 						});
-						if((numQues+r)>=6) {
+						if((numQues+r)==6) {
 							GridPane.setConstraints(moneyButton,j,r);
 							gameGrid.getChildren().add(moneyButton);
 						}else {
@@ -312,27 +400,18 @@ public class GUI extends Application
 				}
 				
 
-			//	moneyButton55.setId("1");
-			//	moneyButton55.gett;
 				
-				gameGrid.getChildren().addAll(catLabel1,catLabel2,catLabel3,catLabel4,catLabel5);
 				gameGrid.setLayoutX( buttonXPos -250);
 				gameGrid.setLayoutY(buttonYStart);
 				gameBackground.getChildren().add( gameCanvas );
 				gameRoot.getChildren().add( gameBackground );
 				gameRoot.getChildren().add(menuButton);
 				gameRoot.getChildren().add(gameGrid);
-				
-				// GAME LOGIC HERE ~ TODO
-		//		GridPane 
-				// demonstrate some question selector functions
-			//	QuestionSelector.copyRandomCategories(QUESTIONBANKFILE, GAMEQUESTIONSFILE);
-			//	QuestionSelector.deleteLinesContaining("100", GAMEQUESTIONSFILE);
-				System.out.println(QuestionSelector.getQuestionSetFromValue("200", "Famous People", GAMEQUESTIONSFILE)[0]);
-				System.out.println(QuestionSelector.getQuestionsRemainingCount(GAMEQUESTIONSFILE).get(1));
-				System.out.println(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(3));
-				
+
 				guiStage.setScene( gameScene );
+				
+				
+
 			}
 		});
 			
@@ -739,6 +818,8 @@ public class GUI extends Application
 		});
 		guiStage.show();
 	}
+	
+	
 }
 
 	

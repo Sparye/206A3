@@ -1,4 +1,4 @@
-##A brief list describing the order in which development steps were made
+# A brief list describing the order in which development steps were made
 
 - Developed a sanitation algorithm to "clean up" lines from the database
 - Established the GameData file structure for saving the game's state

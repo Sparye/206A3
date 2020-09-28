@@ -3,10 +3,11 @@
 
 Upon seeing the number of errors in the provided question database, our first instinct was to rewrite it.
 This would involve fixing every error and replacing the delimiters with a rare string. 
-However, we saw a Piazza response by Nasser warning developers to avoid replacing the delimiters,
+
+We then saw a Piazza response by Nasser warning developers to avoid replacing the delimiters,
 as the testing questions would be in the provided format.
 
-Consequently, we realised we would have to work with the database in its far-from-perfect, original form.
+This made us realise we would have to work with the database in its far-from-perfect, original form.
 This was the original algorithm we developed for this purpose.
 
 

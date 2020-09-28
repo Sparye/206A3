@@ -8,4 +8,4 @@ We initially implemented our TTS functions using espeak. Unfortunately, we found
 
 Following Catherine's festival lecture, we rewrote those functions to use Festival - which did not have the bug.
 
-An interesting fact is that speed value saved in the game's state files is actually still in espeak's speed units - in case a fix for espeak is found. The TTS functions convert this speed to a duration stretch factor. 
+An interesting fact is that speed value saved in the game's state files is actually still in espeak's speed units. This is in case a fix for espeak's audio bug is found. Our TTS functions convert this speed to a duration stretch factor compatible with Festival. 

@@ -1,4 +1,4 @@
-# The Reset Button
+## The Reset Button
 
 This button resets both the Games & Practice modules. They should behave as they do when the program is launched for the first time.
 

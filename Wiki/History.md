@@ -1,4 +1,4 @@
-# Development History
+## Development History
 
 - Developed a sanitation algorithm to "clean up" lines from the database
 - Established the GameData file structure for saving the game's state

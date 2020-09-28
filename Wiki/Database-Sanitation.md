@@ -28,7 +28,7 @@ The user's attempt is then compared with the array using isCorrect(), which:
 - Splits the answer string along "/"
 - Makes an array of all acceptable answers
 - Will accept all acceptable answers with or without the answer prefix
-- If used, the prefix is checked for correctness
+- Checks the prefix for correctness (if used)
 - Is case-insensitive
 
 If the answer is correct, this function returns true.

@@ -1,4 +1,4 @@
-
+package application;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
+import data.Attempt;
+import data.Score;
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -30,6 +32,8 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import questions.LineToVar;
+import questions.QuestionSelector;
 
 public class GUI extends Application
 {
@@ -294,7 +298,6 @@ public class GUI extends Application
 				try {
 					WinningPrompt.setText( "You have completed all questions!\nYour final score is: "+ Score.getSumAndSave("0") );
 				} catch (FileNotFoundException ev) {
-					// TODO Auto-generated catch block
 					ev.printStackTrace();
 				}
 				WinningPrompt.setWrappingWidth( 800 );
@@ -339,7 +342,6 @@ public class GUI extends Application
 							try {
 								currentScore=Score.getSumAndSave("0");
 							} catch (FileNotFoundException ev) {
-								// TODO Auto-generated catch block
 								ev.printStackTrace();
 							}
 							//game question scene
@@ -393,7 +395,6 @@ public class GUI extends Application
 									try {
 										currentScore=Score.getSumAndSave(moneyButton.getText());
 									} catch (FileNotFoundException e1) {
-										// TODO Auto-generated catch block
 										e1.printStackTrace();
 									}
 
@@ -493,7 +494,6 @@ public class GUI extends Application
 					try {
 						WinningPrompt.setText( "You have completed all questions!\nYour final score is: "+ Score.getSumAndSave("0") );
 					} catch (FileNotFoundException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					WinningPrompt.setWrappingWidth( 800 );
@@ -538,7 +538,6 @@ public class GUI extends Application
 								try {
 									currentScore=Score.getSumAndSave("0");
 								} catch (FileNotFoundException ev) {
-									// TODO Auto-generated catch block
 									ev.printStackTrace();
 								}
 								//game question scene
@@ -592,7 +591,6 @@ public class GUI extends Application
 										try {
 											currentScore=Score.getSumAndSave(moneyButton.getText());
 										} catch (FileNotFoundException e1) {
-											// TODO Auto-generated catch block
 											e1.printStackTrace();
 										}
 

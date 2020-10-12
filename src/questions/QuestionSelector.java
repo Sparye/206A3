@@ -1,3 +1,5 @@
+package questions;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -158,12 +160,13 @@ public class QuestionSelector {
 	}
 	
 	public static void reset(String GAMEQUESTIONSFILE) {
-		try {
-			PrintWriter resetGames = new PrintWriter(new FileWriter(GAMEQUESTIONSFILE));
-			resetGames.println("");
-			resetGames.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+			PrintWriter resetGames;
+			try {
+				resetGames = new PrintWriter(new FileWriter(GAMEQUESTIONSFILE));
+				resetGames.println("");
+				resetGames.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 	}
 }

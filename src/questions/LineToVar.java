@@ -1,3 +1,4 @@
+package questions;
 
 public class LineToVar {
 	public static String[] toVarSet(String line) {

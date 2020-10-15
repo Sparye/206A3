@@ -53,7 +53,6 @@ public class GUI extends Application
 	public static final String PRACTICEQUESTIONFILE = "GameData/Practice/Question";
 	public static final String GAMEQUESTIONSFILE = "GameData/Game/Questions";
 	public static final String GAMESCOREFILE = "GameData/Game/.Score";
-	public static final String TTSSPEEDFILE = "GameData/Setting/TTS";
 
 	Scene menuScene, gameScene, practiceScene, settingsScene, resetScene;
 
@@ -75,9 +74,6 @@ public class GUI extends Application
 	String buttonStyle = "-fx-background-color: #d0e7ff; -fx-font-size: 1.75em; ";
 
 	// default data
-	public static final int DEFAULTSPEED = 160;
-	int ttsSpeed = DEFAULTSPEED;
-	int testSpeed = ttsSpeed;
 	String practiceCategory = "";
 	int attemptsRemaining = 0; 
 	String[] practiceQuestionSet = {"Don't edit the game files! :(","","sorry"};
@@ -112,14 +108,7 @@ public class GUI extends Application
 					practiceQuestionSet = LineToVar.toVarSet(practiceQuestionWhole);
 				}
 			}
-			// get tts speed
-			BufferedReader getSpeed = new BufferedReader(new FileReader(TTSSPEEDFILE));
-			String speedLine = getSpeed.readLine();
-			getSpeed.close();
-			if (speedLine != null) {
-				ttsSpeed = Integer.parseInt( speedLine );
-				testSpeed = ttsSpeed;
-			}
+			TextToSpeech.setup();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -220,7 +209,7 @@ public class GUI extends Application
 		testSpeedButton.setPrefSize( buttonXScale/2 , buttonYScale/2 );
 		testSpeedButton.setStyle("-fx-background-color: #003399; -fx-font-size: 1.25em; -fx-text-fill: white; ");
 		testSpeedButton.setOnAction(e-> {
-			TextToSpeech.toTestSpeech(testSpeed);
+			TextToSpeech.toTestSpeech();
 		});
 
 		//button to speak the question
@@ -405,7 +394,7 @@ public class GUI extends Application
 									dontKnowButton.setText("Question Grid");
 									String answer="\n\nCorrect Answer!\nCongratulations! You gained "+moneyButton.getText()+" points!";
 									gameQuestionPrompt.setText(answer);
-									TextToSpeech.toSpeech("Correct!");
+									TextToSpeech.correct();
 								}else {
 									displayScore.setText("Score:\n"+currentScore);
 									gameQuestionRoot.getChildren().remove(answerField);
@@ -414,7 +403,7 @@ public class GUI extends Application
 									dontKnowButton.setText("Question Grid");
 									String answer="\n\nUnfortunately,the correct answer is "+gameQuestionSet[2]+".";
 									gameQuestionPrompt.setText(answer);
-									TextToSpeech.toSpeech("Incorrect");
+									TextToSpeech.incorrect();
 								}
 							});
 
@@ -601,7 +590,7 @@ public class GUI extends Application
 										dontKnowButton.setText("Question Grid");
 										String answer="\n\nCorrect Answer!\nCongratulations! You gained "+moneyButton.getText()+" points!";
 										gameQuestionPrompt.setText(answer);
-										TextToSpeech.toSpeech("Correct!");
+										TextToSpeech.correct();
 									}else {
 										displayScore.setText("Score:\n"+currentScore);
 										gameQuestionRoot.getChildren().remove(answerField);
@@ -610,7 +599,7 @@ public class GUI extends Application
 										dontKnowButton.setText("Question Grid");
 										String answer="\n\nUnfortunately,the correct answer is "+gameQuestionSet[2]+".";
 										gameQuestionPrompt.setText(answer);
-										TextToSpeech.toSpeech("Incorrect");
+										TextToSpeech.incorrect();
 									}
 								});
 
@@ -865,7 +854,7 @@ public class GUI extends Application
 
 							String answer = "\n\nCorrect Answer!!\n\nYou Answered:\n" + practiceQuestionSet[1] + " " + practiceQuestionSet[2];
 							practiceQuestionPrompt.setText(practiceQuestionSet[0] + answer);
-							TextToSpeech.toSpeech("Correct!");
+							TextToSpeech.correct();
 							attemptsRemaining = 0;
 						} else {
 							// User answered incorrectly
@@ -878,10 +867,10 @@ public class GUI extends Application
 
 								String answer = "\n\nNo more attempts!\n\nAnswer:\n" + practiceQuestionSet[1] + " " + practiceQuestionSet[2];
 								practiceQuestionPrompt.setText(practiceQuestionSet[0] + answer);
-								TextToSpeech.toSpeech("Incorrect! The answer was " + practiceQuestionSet[1]+ " " + practiceQuestionSet[2]);
+								TextToSpeech.toSpeech("Sorry! The answer was " + practiceQuestionSet[1]+ " " + practiceQuestionSet[2]);
 
 							} else {
-								TextToSpeech.toSpeech("Incorrect!");
+								TextToSpeech.incorrect();
 								answerField.setText(practiceQuestionSet[1]+ " ");
 								if (attemptsRemaining == 1) {
 									// make text red and display the first letter
@@ -908,7 +897,7 @@ public class GUI extends Application
 				Group settingsRoot = new Group();
 				Scene settingsScene = new Scene( settingsRoot );
 
-				testSpeed = ttsSpeed;
+				TextToSpeech.testSpeed = TextToSpeech.getSpeed();
 
 				StackPane settingsBackground = new StackPane();
 				Canvas settingsCanvas = new Canvas( width, height );
@@ -924,23 +913,23 @@ public class GUI extends Application
 				settingsTitle.strokeText( "Settings", 425, 100 );
 
 				// tts speed slider label
-				Text speedText = new Text(String.format("Talking Speed: x%.2f",(ttsSpeed / (double)(DEFAULTSPEED))));
+				Text speedText = new Text(String.format("Talking Speed: x%.2f",((double)(TextToSpeech.getSpeed()) / 160.0)));
 				speedText.setStyle("-fx-font-size: 1.5em; ");
 				speedText.setTextAlignment(TextAlignment.CENTER);
 				speedText.setLayoutY( buttonYStart );
 				speedText.setLayoutX( buttonXPos );
 
 				// TTS speed slider
-				Slider speedSlider = new Slider( 40 , 320 , ttsSpeed );
+				Slider speedSlider = new Slider( 40 , 320 , TextToSpeech.getSpeed() );
 				speedSlider.setLayoutX(buttonXPos - 130 );
 				speedSlider.setLayoutY(buttonYStart + 10);
 				speedSlider.setPrefWidth(buttonXScale * 2);
 				speedSlider.setStyle("-fx-control-inner-background: #4E4C58; -fx-color: #50C878;");
 				speedSlider.valueProperty().addListener((observable, oldvalue, newvalue) ->
 				{
-					testSpeed = newvalue.intValue();
+					TextToSpeech.testSpeed = newvalue.intValue();
 					saveSettingsButton.setVisible(true);
-					speedText.setText(String.format("Talking Speed: x%.2f",(testSpeed / (double)(DEFAULTSPEED))));
+					speedText.setText(String.format("Talking Speed: x%.2f",((double)(TextToSpeech.testSpeed) / 160.0)));
 				});
 
 
@@ -1026,8 +1015,7 @@ public class GUI extends Application
 
 				saveSettingsButton.setVisible(false);
 				// save tts speed
-				ttsSpeed = testSpeed;
-				TextToSpeech.save(ttsSpeed,TTSSPEEDFILE);
+				TextToSpeech.save();
 
 			}
 		});

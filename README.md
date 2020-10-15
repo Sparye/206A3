@@ -13,6 +13,7 @@ Edit the "categories" text file.
 - Questions go below it, with no blank lines between questions.
 - Brackets are mandatory to separate the question, question prefix, and answer.
 - A slash / can be used to allow multiple valid answers.
+
 For example:
   Fauna
   This is New Zealand’s mountain Parrot ( What is) the Kea

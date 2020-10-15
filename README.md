@@ -1,9 +1,15 @@
 ## Before running the project:
-Ensure that runGame.sh, Quinzical.jar, and your question bank file are in the same directory. The project will create a new directory called GameData to store the game's state while the app is closed.
+Ensure that runGame.sh, Quinzical.jar, and the categories file are in the same directory. The project will create a new directory called GameData to store the game's state while the app is closed.
 
 ## Run the project:
 Execute runGame.sh
 
+To do this:
+- Right-click inside the directory with runGame.sh, Quinzical.jar, and the categories file.
+- Select "open in terminal"
+- enter the following two commands:
+- chmod +x runGame.sh
+- ./runGame.sh
 
 
 ## How do I add questions?

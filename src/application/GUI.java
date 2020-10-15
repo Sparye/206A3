@@ -13,6 +13,7 @@ import java.util.Random;
 import data.Attempt;
 import data.Score;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -385,6 +386,26 @@ public class GUI extends Application
 										gameLockInButton.setVisible(true);
 									}
 									);
+							
+							ChangeListener<String> changeListener = new ChangeListener<>() {
+								@Override
+								public void changed(ObservableValue<? extends String> ov, String old_val, String new_val) {
+									if (new_val.equals("0")) {
+										Timer.timerLabel.textProperty().removeListener(this);
+										gameQuestionRoot.getChildren().remove(Timer.timerLabel);
+										displayScore.setText("Score:\n"+currentScore);
+										gameQuestionRoot.getChildren().remove(answerField);
+										gameQuestionRoot.getChildren().remove(gameLockInButton);
+										gameQuestionRoot.getChildren().remove(hearGameButton);
+										dontKnowButton.setText("Question Grid");
+										String answer="\n\nUnfortunately, the correct answer is "+gameQuestionSet[2]+".";
+										gameQuestionPrompt.setText(answer);
+										TextToSpeech.say("Sorry, No more time!");
+									}
+								}
+							};
+							
+							Timer.timerLabel.textProperty().addListener(changeListener);
 
 							gameLockInButton.setOnAction(ev -> {
 								gameQuestionRoot.getChildren().remove(Timer.timerLabel);
@@ -410,7 +431,7 @@ public class GUI extends Application
 									gameQuestionRoot.getChildren().remove(gameLockInButton);
 									gameQuestionRoot.getChildren().remove(hearGameButton);
 									dontKnowButton.setText("Question Grid");
-									String answer="\n\nUnfortunately,the correct answer is "+gameQuestionSet[2]+".";
+									String answer="\n\nUnfortunately, the correct answer is "+gameQuestionSet[2]+".";
 									gameQuestionPrompt.setText(answer);
 									TextToSpeech.incorrect();
 								}
@@ -587,7 +608,27 @@ public class GUI extends Application
 											gameLockInButton.setVisible(true);
 										}
 										);
-
+								
+								ChangeListener<String> changeListener = new ChangeListener<>() {
+									@Override
+									public void changed(ObservableValue<? extends String> ov, String old_val, String new_val) {
+										if (new_val.equals("0")) {
+											Timer.timerLabel.textProperty().removeListener(this);
+											gameQuestionRoot.getChildren().remove(Timer.timerLabel);
+											displayScore.setText("Score:\n"+currentScore);
+											gameQuestionRoot.getChildren().remove(answerField);
+											gameQuestionRoot.getChildren().remove(gameLockInButton);
+											gameQuestionRoot.getChildren().remove(hearGameButton);
+											dontKnowButton.setText("Question Grid");
+											String answer="\n\nUnfortunately, the correct answer is "+gameQuestionSet[2]+".";
+											gameQuestionPrompt.setText(answer);
+											TextToSpeech.say("Sorry, No more time!");
+										}
+									}
+								};
+								
+								Timer.timerLabel.textProperty().addListener(changeListener);
+								
 								gameLockInButton.setOnAction(ev -> {
 									gameQuestionRoot.getChildren().remove(Timer.timerLabel);
 									if(Attempt.isCorrect(answerField.getText(), gameQuestionSet)) {
@@ -612,7 +653,7 @@ public class GUI extends Application
 										gameQuestionRoot.getChildren().remove(gameLockInButton);
 										gameQuestionRoot.getChildren().remove(hearGameButton);
 										dontKnowButton.setText("Question Grid");
-										String answer="\n\nUnfortunately,the correct answer is "+gameQuestionSet[2]+".";
+										String answer="\n\nUnfortunately, the correct answer is "+gameQuestionSet[2]+".";
 										gameQuestionPrompt.setText(answer);
 										TextToSpeech.incorrect();
 									}

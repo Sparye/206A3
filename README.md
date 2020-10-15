@@ -15,6 +15,9 @@ Edit the "categories" text file.
 - A slash / can be used to allow multiple valid answers.
 
 For example:
+
   Fauna
+  
   This is New Zealand’s mountain Parrot ( What is) the Kea
+  
   This is called a living dinosaur ( What is) the Tuatara / a Boomer

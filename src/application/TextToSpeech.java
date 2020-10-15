@@ -14,26 +14,27 @@ public class TextToSpeech {
 	private static int ttsSpeed = 160;
 	public static int testSpeed = 160;
 	
-	public static void toSpeech(String msg)  {
+	public static Process say(String msg)  {
+		Process process = null;
 		try {
 			String refinedMsg = "\"" + msg + "\"";
 
 			double duration = 160.0/ttsSpeed;
-			String command = "echo $'(Parameter.set `Duration_Stretch " + duration
-					+ ")\n(SayText " + refinedMsg + ")' |  festival --pipe";
+			String command = "echo $'(Parameter.set `Duration_Stretch "
+			+ duration + ")\n(SayText " + refinedMsg + ")' |  festival --pipe";
 			
 			
 			ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
 			
-			pb.start();
+			process = pb.start();
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+		return process;
 	}
 	
-	public static void toTestSpeech()  {
+	public static void test()  {
 		ArrayList<String> testPrompts = new ArrayList<String>();
 		testPrompts.add("Testing! one two three!");
 		testPrompts.add("I am a robot! beep boop!");
@@ -51,7 +52,7 @@ public class TextToSpeech {
 		String msg = testPrompts.get(0);
 		int temp = ttsSpeed;
 		ttsSpeed = testSpeed;
-		TextToSpeech.toSpeech(msg);
+		TextToSpeech.say(msg);
 		ttsSpeed = temp;
 	}
 	
@@ -67,7 +68,7 @@ public class TextToSpeech {
 		Collections.shuffle(correctPrompts);
 		
 		String msg = correctPrompts.get(0);
-		TextToSpeech.toSpeech(msg);
+		TextToSpeech.say(msg);
 	}
 	
 	public static void incorrect() {
@@ -81,7 +82,7 @@ public class TextToSpeech {
 		Collections.shuffle(incorrectPrompts);
 		
 		String msg = incorrectPrompts.get(0);
-		TextToSpeech.toSpeech(msg);
+		TextToSpeech.say(msg);
 	}
 		
 	
@@ -95,6 +96,7 @@ public class TextToSpeech {
 				e.printStackTrace();
 			}
 	}
+	
 	public static int getSpeed() {
 		return ttsSpeed;
 	}

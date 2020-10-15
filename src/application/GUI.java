@@ -108,10 +108,12 @@ public class GUI extends Application
 					practiceQuestionSet = LineToVar.toVarSet(practiceQuestionWhole);
 				}
 			}
-			TextToSpeech.setup();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		TextToSpeech.setup();
+		Timer.setup();
 
 
 		//  Main Menu setup
@@ -209,7 +211,7 @@ public class GUI extends Application
 		testSpeedButton.setPrefSize( buttonXScale/2 , buttonYScale/2 );
 		testSpeedButton.setStyle("-fx-background-color: #003399; -fx-font-size: 1.25em; -fx-text-fill: white; ");
 		testSpeedButton.setOnAction(e-> {
-			TextToSpeech.toTestSpeech();
+			TextToSpeech.test();
 		});
 
 		//button to speak the question
@@ -219,7 +221,7 @@ public class GUI extends Application
 		hearButton.setPrefSize( buttonXScale/2 , buttonYScale/2 );
 		hearButton.setStyle("-fx-background-color: #003399; -fx-font-size: 1.00em; -fx-text-fill: white; ");
 		hearButton.setOnAction(e-> {
-			TextToSpeech.toSpeech(practiceQuestionSet[0]);
+			TextToSpeech.say(practiceQuestionSet[0]);
 		});
 
 		//button to speak the game question
@@ -229,7 +231,7 @@ public class GUI extends Application
 		hearGameButton.setPrefSize( buttonXScale/2 , buttonYScale/2 );
 		hearGameButton.setStyle("-fx-background-color: #003399; -fx-font-size: 1.00em; -fx-text-fill: white; ");
 		hearGameButton.setOnAction(e-> {
-			TextToSpeech.toSpeech(gameQuestionSet[0]);
+			TextToSpeech.say(gameQuestionSet[0]);
 		});
 
 		// button used to lock in a game question attempt
@@ -250,7 +252,11 @@ public class GUI extends Application
 			QuestionSelector.reset(GAMEQUESTIONSFILE);
 			guiStage.setScene(menuScene);
 		});
-
+		
+		// timer label format
+		Timer.timerLabel.setLayoutX(900);
+		Timer.timerLabel.setLayoutY(buttonYStart + buttonYOffset * 2 + 40);
+		Timer.timerLabel.setStyle("-fx-font-size: 10em");
 
 		// I dont know button
 		Button dontKnowButton = new Button( "Don't know" );
@@ -327,7 +333,9 @@ public class GUI extends Application
 							//	System.out.println(QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE)[0]);
 							gameQuestionSet=QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE);	
 							QuestionSelector.deleteLinesContaining(gameQuestionSet[0], GAMEQUESTIONSFILE);
-							TextToSpeech.toSpeech(gameQuestionSet[0]);
+							//TextToSpeech.say(gameQuestionSet[0]);
+							TimedQuestion sayQuestion = new TimedQuestion(gameQuestionSet[0]);
+							sayQuestion.start();
 							try {
 								currentScore=Score.getSumAndSave("0");
 							} catch (FileNotFoundException ev) {
@@ -371,7 +379,7 @@ public class GUI extends Application
 							displayScore.setLayoutY( buttonYStart + buttonYOffset * 4 );
 							displayScore.setTextAlignment(TextAlignment.CENTER);
 							displayScore.setStyle("-fx-background-color: #d0e7ff; -fx-font-size: 1.75em; ");
-
+							
 							answerField.textProperty().addListener(
 									(ObservableValue<? extends String> ov, String old_val, String new_val) -> {
 										gameLockInButton.setVisible(true);
@@ -415,6 +423,7 @@ public class GUI extends Application
 							gameQuestionRoot.getChildren().add( displayScore );
 							gameQuestionRoot.getChildren().add( hearGameButton );
 							gameQuestionRoot.getChildren().add( dontKnowButton );
+							gameQuestionRoot.getChildren().add( Timer.timerLabel );
 
 							guiStage.setScene(gameQuestionScene);
 
@@ -523,12 +532,16 @@ public class GUI extends Application
 								//	System.out.println(QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE)[0]);
 								gameQuestionSet=QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE);	
 								QuestionSelector.deleteLinesContaining(gameQuestionSet[0], GAMEQUESTIONSFILE);
-								TextToSpeech.toSpeech(gameQuestionSet[0]);
+								//TextToSpeech.say(gameQuestionSet[0]);
+								TimedQuestion sayQuestion = new TimedQuestion(gameQuestionSet[0]);
+								sayQuestion.start();
+								
 								try {
 									currentScore=Score.getSumAndSave("0");
 								} catch (FileNotFoundException ev) {
 									ev.printStackTrace();
 								}
+								
 								//game question scene
 								Group gameQuestionRoot = new Group();
 								Scene gameQuestionScene = new Scene(gameQuestionRoot);
@@ -567,6 +580,7 @@ public class GUI extends Application
 								displayScore.setLayoutY( buttonYStart + buttonYOffset * 4 );
 								displayScore.setTextAlignment(TextAlignment.CENTER);
 								displayScore.setStyle("-fx-background-color: #d0e7ff; -fx-font-size: 1.75em; ");
+								
 
 								answerField.textProperty().addListener(
 										(ObservableValue<? extends String> ov, String old_val, String new_val) -> {
@@ -611,6 +625,7 @@ public class GUI extends Application
 								gameQuestionRoot.getChildren().add( displayScore );
 								gameQuestionRoot.getChildren().add( hearGameButton );
 								gameQuestionRoot.getChildren().add( dontKnowButton );
+								gameQuestionRoot.getChildren().add( Timer.timerLabel );
 
 								guiStage.setScene(gameQuestionScene);
 
@@ -802,8 +817,8 @@ public class GUI extends Application
 						String practiceQuestionWhole = questionArray.get(chooseRandomQuestion.nextInt(questionArray.size()));
 						practiceQuestionSet = LineToVar.toVarSet(practiceQuestionWhole);
 						answerField.setText(practiceQuestionSet[1]+ " ");
-						TextToSpeech.toSpeech(practiceQuestionSet[0]);
-
+						TextToSpeech.say(practiceQuestionSet[0]);
+						
 						// reset attempts
 						attemptsRemaining = 3;
 						try {
@@ -832,7 +847,7 @@ public class GUI extends Application
 					public void handle(ActionEvent arg0) {
 						practiceQuestionRoot.getChildren().add(menuButton);
 						answerField.setText(practiceQuestionSet[1]+ " ");
-						TextToSpeech.toSpeech(practiceQuestionSet[0]);
+						TextToSpeech.say(practiceQuestionSet[0]);
 						guiStage.setScene( practiceQuestionScene );
 						if (attemptsRemaining == 1) {
 							String firstLetter = "" + practiceQuestionSet[2].charAt(0);
@@ -867,7 +882,7 @@ public class GUI extends Application
 
 								String answer = "\n\nNo more attempts!\n\nAnswer:\n" + practiceQuestionSet[1] + " " + practiceQuestionSet[2];
 								practiceQuestionPrompt.setText(practiceQuestionSet[0] + answer);
-								TextToSpeech.toSpeech("Sorry! The answer was " + practiceQuestionSet[1]+ " " + practiceQuestionSet[2]);
+								TextToSpeech.say("Sorry! The answer was " + practiceQuestionSet[1]+ " " + practiceQuestionSet[2]);
 
 							} else {
 								TextToSpeech.incorrect();
@@ -931,6 +946,27 @@ public class GUI extends Application
 					saveSettingsButton.setVisible(true);
 					speedText.setText(String.format("Talking Speed: x%.2f",((double)(TextToSpeech.testSpeed) / 160.0)));
 				});
+				
+				// timer slider label
+				Timer.tempLength = Timer.getLength();
+				Text timerText = new Text(String.format("Timer Length: %d secs", Timer.getLength()));
+				timerText.setStyle("-fx-font-size: 1.5em; ");
+				timerText.setTextAlignment(TextAlignment.CENTER);
+				timerText.setLayoutY( buttonYStart + buttonYOffset );
+				timerText.setLayoutX( buttonXPos );
+				
+				// timer length slider
+				Slider timerSlider = new Slider( 5 , 30 , Timer.getLength() );
+				timerSlider.setLayoutX(buttonXPos - 130 );
+				timerSlider.setLayoutY(buttonYStart + 10 + buttonYOffset);
+				timerSlider.setPrefWidth(buttonXScale * 2);
+				timerSlider.setStyle("-fx-control-inner-background: #4E4C58; -fx-color: #50C878;");
+				timerSlider.valueProperty().addListener((observable, oldvalue, newvalue) ->
+				{
+					Timer.tempLength = newvalue.intValue();
+					saveSettingsButton.setVisible(true);
+					timerText.setText(String.format("Timer Length: %d secs", Timer.tempLength));
+				});
 
 
 
@@ -942,7 +978,8 @@ public class GUI extends Application
 				settingsRoot.getChildren().add( menuButton );
 				settingsRoot.getChildren().add( saveSettingsButton );
 				settingsRoot.getChildren().add( testSpeedButton );
-
+				settingsRoot.getChildren().add( timerSlider );
+				settingsRoot.getChildren().add( timerText );
 
 				guiStage.setScene( settingsScene );
 			}
@@ -1012,10 +1049,10 @@ public class GUI extends Application
 		saveSettingsButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-
 				saveSettingsButton.setVisible(false);
-				// save tts speed
+				// save TTS speed
 				TextToSpeech.save();
+				Timer.save();
 
 			}
 		});

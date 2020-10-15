@@ -44,8 +44,8 @@ public class GUI extends Application
 	}
 
 	// GUI window size
-	int width = 1200;
-	int height = 800;
+	public static int width = 1200;
+	public static int height = 800;
 
 	// file names to use
 	public static final String QUESTIONBANKFILE = "categories";
@@ -59,19 +59,19 @@ public class GUI extends Application
 
 	// title settings
 	String menuTitle = "Main Menu";
-	Font titleFont = Font.font("Arial", FontWeight.BOLD, 72);
-	double titleXPos = 375;
+	public static final Font titleFont = Font.font("Arial", FontWeight.BOLD, 72);
+	final double titleXPos = 375;
 
 	// background settings
-	String backgroundStyle = "-fx-background-color: #e4bbde; ";
+	public static final String backgroundStyle = "-fx-background-color: #e4bbde; ";
 
 	// button settings
-	double buttonXPos = 480;
-	double buttonYStart = 160;
-	double buttonYOffset = 150;
-	double buttonXScale = 250;
-	double buttonYScale = 100;
-	String buttonStyle = "-fx-background-color: #d0e7ff; -fx-font-size: 1.75em; ";
+	public static final double buttonXPos = 480;
+	public static final double buttonYStart = 160;
+	public static final double buttonYOffset = 150;
+	public static final double buttonXScale = 250;
+	public static final double buttonYScale = 100;
+	public static final String buttonStyle = "-fx-background-color: #d0e7ff; -fx-font-size: 1.75em; ";
 
 	// default data
 	String practiceCategory = "";
@@ -387,6 +387,7 @@ public class GUI extends Application
 									);
 
 							gameLockInButton.setOnAction(ev -> {
+								gameQuestionRoot.getChildren().remove(Timer.timerLabel);
 								if(Attempt.isCorrect(answerField.getText(), gameQuestionSet)) {
 
 									try {
@@ -532,7 +533,6 @@ public class GUI extends Application
 								//	System.out.println(QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE)[0]);
 								gameQuestionSet=QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE);	
 								QuestionSelector.deleteLinesContaining(gameQuestionSet[0], GAMEQUESTIONSFILE);
-								//TextToSpeech.say(gameQuestionSet[0]);
 								TimedQuestion sayQuestion = new TimedQuestion(gameQuestionSet[0]);
 								sayQuestion.start();
 								
@@ -589,6 +589,7 @@ public class GUI extends Application
 										);
 
 								gameLockInButton.setOnAction(ev -> {
+									gameQuestionRoot.getChildren().remove(Timer.timerLabel);
 									if(Attempt.isCorrect(answerField.getText(), gameQuestionSet)) {
 
 										try {

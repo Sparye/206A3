@@ -13,8 +13,12 @@ public class TextToSpeech {
 	public static final String TTSSPEEDFILE = "GameData/Setting/TTS";
 	private static int ttsSpeed = 160;
 	public static int testSpeed = 160;
+	private static Process previous = null;
 	
 	public static Process say(String msg)  {
+		if (previous != null) {
+			previous.destroy();
+		}
 		Process process = null;
 		try {
 			msg = msg.replace("\'", "");
@@ -28,6 +32,7 @@ public class TextToSpeech {
 			ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
 			
 			process = pb.start();
+			previous = process;
 
 		} catch (Exception e) {
 			e.printStackTrace();

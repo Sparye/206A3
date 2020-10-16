@@ -17,7 +17,7 @@ public class TextToSpeech {
 	
 	public static Process say(String msg)  {
 		if (previous != null) {
-			previous.destroy();
+			previous.destroyForcibly();
 		}
 		Process process = null;
 		try {

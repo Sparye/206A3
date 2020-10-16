@@ -170,7 +170,9 @@ public class GridScene{
 						gameQuestionSet=QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE);	
 						QuestionSelector.deleteLinesContaining(gameQuestionSet[0], GAMEQUESTIONSFILE);
 						//TextToSpeech.say(gameQuestionSet[0]);
-						TimedQuestion sayQuestion = new TimedQuestion(gameQuestionSet[0]);
+						QuestionScene qs = new QuestionScene(restartButton, menuButton, gameLockInButton, hearGameButton, dontKnowButton, guiStage, gameQuestionSet, moneyButton);
+						guiStage.setScene(qs.getQuestionScene());
+				/**		TimedQuestion sayQuestion = new TimedQuestion(gameQuestionSet[0]);
 						sayQuestion.start();
 						try {
 							currentScore=Score.getSumAndSave("0");
@@ -282,7 +284,7 @@ public class GridScene{
 						gameQuestionRoot.getChildren().add( dontKnowButton );
 						gameQuestionRoot.getChildren().add( Timer.timerLabel );
 
-						guiStage.setScene(gameQuestionScene);
+						guiStage.setScene(gameQuestionScene);**/
 
 					});
 					if((numQues+r)==6) {

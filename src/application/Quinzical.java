@@ -57,7 +57,7 @@ public class Quinzical extends Application
 	public static final double buttonYOffset = 150;
 	public static final double buttonXScale = 250;
 	public static final double buttonYScale = 100;
-	public static final String buttonStyle = "-fx-background-color: #d0e7ff; -fx-font-size: 1.75em; ";
+	public static final String buttonStyle = "-fx-background-color: #d0e7ff; -fx-font-size: 2em; ";
 
 	// default data
 	String practiceCategory = "";
@@ -101,67 +101,67 @@ public class Quinzical extends Application
 		gameButton.setLayoutX( buttonXPos );
 		gameButton.setLayoutY( buttonYStart );
 		gameButton.setPrefSize( buttonXScale , buttonYScale );
-		gameButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 1.75em; ");
+		gameButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 2em; ");
 
 		Button practiceButton = new Button( "Practice" );
 		practiceButton.setLayoutX( buttonXPos );
 		practiceButton.setLayoutY( buttonYStart + buttonYOffset );
 		practiceButton.setPrefSize( buttonXScale , buttonYScale );
-		practiceButton.setStyle(buttonStyle);
+		practiceButton.setStyle("-fx-text-fill: #D4D4D4; -fx-background-color: #7c5295; -fx-font-size: 2em; ");
 
 		Button settingsButton = new Button( "Settings" );
 		settingsButton.setLayoutX( buttonXPos );
 		settingsButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
 		settingsButton.setPrefSize( buttonXScale , buttonYScale );
-		settingsButton.setStyle("-fx-background-color: #EC9706; -fx-font-size: 1.75em; ");
+		settingsButton.setStyle("-fx-background-color: #EC9706; -fx-font-size: 2em; ");
 
 		Button resetButton = new Button( "Reset Progress" );
 		resetButton.setLayoutX( buttonXPos );
 		resetButton.setLayoutY( buttonYStart + buttonYOffset * 3 );
 		resetButton.setPrefSize( buttonXScale , buttonYScale );
-		resetButton.setStyle("-fx-background-color: #B43757; -fx-font-size: 1.75em; ");
+		resetButton.setStyle("-fx-text-fill: #D4D4D4; -fx-background-color: #B43757; -fx-font-size: 2em; ");
 
 		// button used to reset data (in reset submenu)
 		Button resetConfirmButton = new Button( "Confirm Reset" );
 		resetConfirmButton.setLayoutX( buttonXPos );
 		resetConfirmButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
 		resetConfirmButton.setPrefSize( buttonXScale , buttonYScale );
-		resetConfirmButton.setStyle("-fx-text-fill: #D4D4D4; -fx-background-color: #4E4C58; -fx-font-size: 1.75em; ");
+		resetConfirmButton.setStyle("-fx-text-fill: #D4D4D4; -fx-background-color: #4E4C58; -fx-font-size: 2em; ");
 
 		// button used to confirm category selection in practice module
 		Button practiceConfirmButton = new Button( "Practice This!" );
 		practiceConfirmButton.setLayoutX( buttonXPos );
 		practiceConfirmButton.setLayoutY( buttonYStart + buttonYOffset * 1 );
 		practiceConfirmButton.setPrefSize( buttonXScale , buttonYScale );
-		practiceConfirmButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 1.75em; ");
+		practiceConfirmButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 2em; ");
 
 		// button used to return to in-progress practice question
 		Button practiceReturnButton = new Button( "Return to Question" );
 		practiceReturnButton.setLayoutX( buttonXPos );
 		practiceReturnButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
 		practiceReturnButton.setPrefSize( buttonXScale , buttonYScale );
-		practiceReturnButton.setStyle("-fx-background-color: #EC9706; -fx-font-size: 1.75em; ");
+		practiceReturnButton.setStyle("-fx-background-color: #EC9706; -fx-font-size: 1.8em; ");
 
 		// button used to lock in a practice question attempt
 		Button practiceLockInButton = new Button( "I'm Sure!" );
 		practiceLockInButton.setLayoutX( buttonXPos );
 		practiceLockInButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
 		practiceLockInButton.setPrefSize( buttonXScale , buttonYScale );
-		practiceLockInButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 1.75em; ");
+		practiceLockInButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 2em; ");
 
 		// button used to lock in a practice question attempt
 		Button saveSettingsButton = new Button( "Save" );
 		saveSettingsButton.setLayoutX( buttonXPos );
 		saveSettingsButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
 		saveSettingsButton.setPrefSize( buttonXScale , buttonYScale );
-		saveSettingsButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 1.75em; ");
+		saveSettingsButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 2em; ");
 
 		// return to menu button (used for other scenes)
 		Button menuButton = new Button( "Back to Menu" );
 		menuButton.setLayoutX( buttonXPos );
 		menuButton.setLayoutY( buttonYStart + buttonYOffset * 3 );
 		menuButton.setPrefSize( buttonXScale , buttonYScale );
-		menuButton.setStyle("-fx-background-color: #B43757; -fx-font-size: 1.75em; ");
+		menuButton.setStyle("-fx-text-fill: #D4D4D4; -fx-background-color: #B43757; -fx-font-size: 2em; ");
 		menuButton.setOnAction(e-> guiStage.setScene(menuScene));
 
 		//button used to test speed in setting
@@ -199,14 +199,14 @@ public class Quinzical extends Application
 		gameLockInButton.setLayoutX( buttonXPos );
 		gameLockInButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
 		gameLockInButton.setPrefSize( buttonXScale , buttonYScale );
-		gameLockInButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 1.75em; ");
+		gameLockInButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 2em; ");
 
 		// restart game module button
 		Button restartButton = new Button( "Play again" );
 		restartButton.setLayoutX( buttonXPos );
 		restartButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
 		restartButton.setPrefSize( buttonXScale , buttonYScale );
-		restartButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 1.75em; ");
+		restartButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 2em; ");
 		restartButton.setOnAction(e-> {
 			Score.reset(GAMESCOREFILE);
 			QuestionSelector.reset(GAMEQUESTIONSFILE);

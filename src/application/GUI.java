@@ -89,7 +89,7 @@ public class GUI extends Application
 		guiStage.setTitle( "Quinzical" );
 
 		// fetch data
-		try {
+	/**	try {
 			// get practice attempts
 			BufferedReader getAttempts = new BufferedReader(new FileReader(PRACTICEATTEMPTFILE));
 			String attemptLine = getAttempts.readLine();
@@ -111,7 +111,7 @@ public class GUI extends Application
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}**/
 		
 		TextToSpeech.setup();
 		Timer.setup();
@@ -707,7 +707,10 @@ public class GUI extends Application
 
 		}**/);
 
-		practiceButton.setOnAction(new EventHandler<ActionEvent>() {
+		practiceButton.setOnAction(e -> {
+			PracticeScene ps = new PracticeScene(practiceConfirmButton, practiceReturnButton, menuButton, practiceLockInButton, hearButton, guiStage);
+			guiStage.setScene(ps.getPracticeScene());
+		}/**new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
 
@@ -954,7 +957,7 @@ public class GUI extends Application
 
 
 			}
-		});
+		}**/);
 
 		settingsButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override

@@ -266,6 +266,9 @@ public class GUI extends Application
 		dontKnowButton.setPrefSize( buttonXScale , buttonYScale );
 		dontKnowButton.setStyle("-fx-background-color: #B43757; -fx-font-size: 1.75em; ");
 		dontKnowButton.setOnAction(e-> {
+			GridScene gs = new GridScene(restartButton, menuButton, gameLockInButton, hearGameButton, dontKnowButton, guiStage);
+			guiStage.setScene(gs.getGridScene());
+			/**
 
 			Group gameRoot = new Group();
 			Scene gameScene = new Scene( gameRoot );
@@ -472,7 +475,7 @@ public class GUI extends Application
 
 				guiStage.setScene( gameScene );
 
-			}
+			}**/
 		}
 				);
 
@@ -484,7 +487,12 @@ public class GUI extends Application
 		guiStage.setScene( menuScene );
 
 		// button handlers
-		gameButton.setOnAction(new EventHandler<ActionEvent>() {
+		gameButton.setOnAction(e -> {
+			GridScene gs = new GridScene(restartButton, menuButton, gameLockInButton, hearGameButton, dontKnowButton, guiStage);
+			guiStage.setScene(gs.getGridScene());
+		}
+				
+				/**new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
 				Group gameRoot = new Group();
@@ -697,7 +705,7 @@ public class GUI extends Application
 				}
 			}
 
-		});
+		}**/);
 
 		practiceButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override

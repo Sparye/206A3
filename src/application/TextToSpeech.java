@@ -17,11 +17,12 @@ public class TextToSpeech {
 	
 	public static Process say(String msg)  {
 		if (previous != null) {
-			previous.destroyForcibly();
+			previous.destroy();
 		}
 		Process process = null;
 		try {
 			msg = msg.replace("\'", "");
+			msg = msg.replace("\"", "");
 			String refinedMsg = "\"" + msg + "\"";
 
 			double duration = 160.0/ttsSpeed;

@@ -17,6 +17,7 @@ public class TextToSpeech {
 	public static Process say(String msg)  {
 		Process process = null;
 		try {
+			msg = msg.replace("\'", "");
 			String refinedMsg = "\"" + msg + "\"";
 
 			double duration = 160.0/ttsSpeed;

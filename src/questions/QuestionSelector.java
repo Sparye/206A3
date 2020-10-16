@@ -11,6 +11,9 @@ import java.util.Collections;
 import java.util.Random;
 
 public class QuestionSelector {
+	private static boolean unlocked = false;
+	private static String LOCKFILE = "GameData/Setting/.lock";
+	
 	public static void copyRandomCategories(String QUESTIONBANKFILE, String GAMEQUESTIONSFILE)  {
 		try {
 			
@@ -118,8 +121,11 @@ public class QuestionSelector {
 				// Add category names to array list
 				BufferedReader readCategories = new BufferedReader(new FileReader(CATEGORYFILE));
 				while((lineToRead = readCategories.readLine()) != null) {
+					if (lineToRead.equals("<INTERNATIONAL>") && !unlocked) {
+						break;
+					}
 					if (lineToRead.indexOf('(') == -1 ) {
-						if (!lineToRead.isBlank()) {
+						if (!lineToRead.isBlank() && !lineToRead.equals("<INTERNATIONAL>")) {
 							categoryArray.add(lineToRead);
 						}
 					}
@@ -157,6 +163,48 @@ public class QuestionSelector {
 			e.printStackTrace();
 		}
 		return questionCountArray;
+	}
+	public static void setupLock() {
+				try {
+					BufferedReader getStatus = new BufferedReader(new FileReader(LOCKFILE));
+					String lockLine = getStatus.readLine();
+					getStatus.close();
+					if (lockLine != null) {
+						if (lockLine.equals("1"))
+							unlocked = true;
+						else
+							unlocked = false;
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				} 
+	}
+	
+	public static boolean isUnlocked() {
+		return unlocked;
+	}
+	public static void unlock() {
+		unlocked = true;
+		PrintWriter lockWrite;
+		try {
+			lockWrite = new PrintWriter(new FileWriter(LOCKFILE));
+			lockWrite.println("1");
+			lockWrite.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	public static void lock() {
+		unlocked = false;
+		PrintWriter lockWrite;
+		try {
+			lockWrite = new PrintWriter(new FileWriter(LOCKFILE));
+			lockWrite.println("0");
+			lockWrite.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static void reset(String GAMEQUESTIONSFILE) {

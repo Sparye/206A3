@@ -11,11 +11,10 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
@@ -26,6 +25,7 @@ public class QuestionScene {
 
 	Stage guiStage;
 	
+	public static String[] gameQuestionSet = {"Do not edit the game files!","","sorry"};
 	
 	public QuestionScene(Button inRestartButton,Button inMenuButton,Button inGameLockInButton,Button inHearGameButton,Button inDontKnowButton,Stage inGuiStage,String[] inQuestionSet,Button inMoneyButton) {
 		restartButton = inRestartButton;
@@ -37,41 +37,12 @@ public class QuestionScene {
 		gameQuestionSet = inQuestionSet;
 		moneyButton = inMoneyButton;
 	}
-	//carried over default values
-		String backgroundStyle = "-fx-background-color: #e4bbde; ";
-
-
-		Font titleFont = Font.font("Arial", FontWeight.BOLD, 72);
-		// GUI window size
-		int width = 1200;
-		int height = 800;
-
-
-
 		// file names to use
 		public static final String QUESTIONBANKFILE = "categories";
-		public static final String PRACTICEATTEMPTFILE = "GameData/Practice/Attempt";
-		public static final String PRACTICEQUESTIONFILE = "GameData/Practice/Question";
 		public static final String GAMEQUESTIONSFILE = "GameData/Game/Questions";
 		public static final String GAMESCOREFILE = "GameData/Game/.Score";
-		public static final String TTSSPEEDFILE = "GameData/Setting/TTS";
-
-		// button settings
-		double buttonXPos = 480;
-		double buttonYStart = 160;
-		double buttonYOffset = 150;
-		double buttonXScale = 250;
-		double buttonYScale = 100;
-		String buttonStyle = "-fx-background-color: #d0e7ff; -fx-font-size: 1.75em; ";
 
 		// default data
-		public static final int DEFAULTSPEED = 160;
-		int ttsSpeed = DEFAULTSPEED;
-		int testSpeed = ttsSpeed;
-		String practiceCategory = "";
-		int attemptsRemaining = 0; 
-		String[] practiceQuestionSet = {"Don't edit the game files! :(","","sorry"};
-		String[] gameQuestionSet = {"Don't edit the game files! :(","","sorry"};
 		int currentScore=0;
 		
 		public Scene getQuestionScene() {
@@ -87,15 +58,15 @@ public class QuestionScene {
 			Scene gameQuestionScene = new Scene(gameQuestionRoot);
 
 			StackPane gameQuestionBackground = new StackPane();
-			Canvas gameQuestionCanvas = new Canvas( width, height );
-			gameQuestionBackground.setStyle( backgroundStyle );
+			Canvas gameQuestionCanvas = new Canvas( Quinzical.width, Quinzical.height );
+			gameQuestionBackground.setStyle( Quinzical.backgroundStyle );
 
 			// game module title
 			GraphicsContext categoryTitlePrompt = gameQuestionCanvas.getGraphicsContext2D();
 			categoryTitlePrompt.setFill( Color.PURPLE );
 			categoryTitlePrompt.setStroke( Color.BLACK );
 			categoryTitlePrompt.setLineWidth(2);
-			categoryTitlePrompt.setFont( titleFont );
+			categoryTitlePrompt.setFont( Quinzical.titleFont );
 			categoryTitlePrompt.fillText( "Game Module", 330, 100 );
 			categoryTitlePrompt.strokeText( "Game Module", 330, 100 );
 
@@ -104,22 +75,22 @@ public class QuestionScene {
 			gameQuestionPrompt.setWrappingWidth( 800 );
 			gameQuestionPrompt.setStyle("-fx-font-size: 2.5em; ");
 			gameQuestionPrompt.setTextAlignment(TextAlignment.CENTER);
-			gameQuestionPrompt.setLayoutY(buttonYStart);
+			gameQuestionPrompt.setLayoutY(Quinzical.buttonYStart);
 			gameQuestionPrompt.setLayoutX(200);
 
 			// user answer field
 			TextField answerField = new TextField(gameQuestionSet[1]+ " ");
-			answerField.setLayoutX( buttonXPos - 75 ) ;
-			answerField.setLayoutY( buttonYStart + buttonYOffset );
+			answerField.setLayoutX( Quinzical.buttonXPos - 75 ) ;
+			answerField.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset );
 			answerField.setPrefSize( 400 , 50 );
-			answerField.setStyle( buttonStyle );
+			answerField.setStyle( Quinzical.buttonStyle );
 
 			//display current score
-			Text displayScore = new Text("Score:\n"+currentScore);
-			displayScore.setLayoutX( 50 );
-			displayScore.setLayoutY( buttonYStart + buttonYOffset * 4 );
+			Label displayScore = new Label("" + currentScore);
+			displayScore.setLayoutX( 75 );
+			displayScore.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset * 2 + 40 );
 			displayScore.setTextAlignment(TextAlignment.CENTER);
-			displayScore.setStyle("-fx-background-color: #d0e7ff; -fx-font-size: 1.75em; ");
+			displayScore.setStyle("-fx-font-size: 9em; ");
 			
 			answerField.textProperty().addListener(
 					(ObservableValue<? extends String> ov, String old_val, String new_val) -> {
@@ -131,9 +102,10 @@ public class QuestionScene {
 				@Override
 				public void changed(ObservableValue<? extends String> ov, String old_val, String new_val) {
 					if (new_val.equals("0")) {
+						Timer.timerLabel.textProperty().unbind();
 						Timer.timerLabel.textProperty().removeListener(this);
 						gameQuestionRoot.getChildren().remove(Timer.timerLabel);
-						displayScore.setText("Score:\n"+currentScore);
+						displayScore.setText(""+currentScore);
 						gameQuestionRoot.getChildren().remove(answerField);
 						gameQuestionRoot.getChildren().remove(gameLockInButton);
 						gameQuestionRoot.getChildren().remove(hearGameButton);
@@ -146,9 +118,24 @@ public class QuestionScene {
 			};
 			
 			Timer.timerLabel.textProperty().addListener(changeListener);
+			
+			dontKnowButton.setLayoutX( Quinzical.buttonXPos );
+			dontKnowButton.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset * 3 );
+			dontKnowButton.setPrefSize( Quinzical.buttonXScale , Quinzical.buttonYScale );
+			dontKnowButton.setStyle("-fx-background-color: #B43757; -fx-font-size: 1.75em; ");
+			dontKnowButton.setOnAction(e-> {
+				Timer.timerLabel.textProperty().unbind();
+				Timer.timerLabel.textProperty().removeListener(changeListener);
+				gameQuestionRoot.getChildren().remove(Timer.timerLabel);
+				GridScene gs = new GridScene(restartButton, menuButton, gameLockInButton,
+						hearGameButton, dontKnowButton, guiStage);
+				guiStage.setScene(gs.getGridScene());});
 
 			gameLockInButton.setOnAction(ev -> {
+				Timer.timerLabel.textProperty().unbind();
+				Timer.timerLabel.textProperty().removeListener(changeListener);
 				gameQuestionRoot.getChildren().remove(Timer.timerLabel);
+				
 				if(Attempt.isCorrect(answerField.getText(), gameQuestionSet)) {
 
 					try {
@@ -156,8 +143,8 @@ public class QuestionScene {
 					} catch (FileNotFoundException e1) {
 						e1.printStackTrace();
 					}
-
-					displayScore.setText("Score:\n"+currentScore);
+					
+					displayScore.setText(""+currentScore);
 					gameQuestionRoot.getChildren().remove(answerField);
 					gameQuestionRoot.getChildren().remove(gameLockInButton);
 					gameQuestionRoot.getChildren().remove(hearGameButton);
@@ -166,7 +153,7 @@ public class QuestionScene {
 					gameQuestionPrompt.setText(answer);
 					TextToSpeech.correct();
 				}else {
-					displayScore.setText("Score:\n"+currentScore);
+					displayScore.setText(""+currentScore);
 					gameQuestionRoot.getChildren().remove(answerField);
 					gameQuestionRoot.getChildren().remove(gameLockInButton);
 					gameQuestionRoot.getChildren().remove(hearGameButton);

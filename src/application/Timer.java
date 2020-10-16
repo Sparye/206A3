@@ -39,6 +39,10 @@ public class Timer implements Runnable {
 	}
 	
 	public static void setup() {
+		// timer label format
+		Timer.timerLabel.setLayoutX(900);
+		Timer.timerLabel.setLayoutY(Quinzical.buttonYStart + Quinzical.buttonYOffset * 2 + 40);
+		Timer.timerLabel.setStyle("-fx-font-size: 10em");
 		try {
 			BufferedReader getLength = new BufferedReader(new FileReader(TIMERLENGTHFILE));
 			String lengthLine = getLength.readLine();

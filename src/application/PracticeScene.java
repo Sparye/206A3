@@ -11,6 +11,7 @@ import java.util.Random;
 
 import data.Attempt;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -22,16 +23,15 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import questions.LineToVar;
+import questions.QuestionSelector;
 
 public class PracticeScene {
 	Button practiceConfirmButton,practiceReturnButton,menuButton,practiceLockInButton,hearButton;
-
+	public static String[] practiceQuestionSet = {"Do not edit the game files!","","sorry"};
 	Stage guiStage;
 	
 	public PracticeScene(Button inPracticeConfirmButton,Button inPracticeReturnButton, Button inMenuButton,Button inPracticeLockInButton,Button inHearButton,Stage inGuiStage) {
@@ -43,50 +43,20 @@ public class PracticeScene {
 		guiStage=inGuiStage;
 		
 	}
-	
-	//carried over default values
-	String backgroundStyle = "-fx-background-color: #e4bbde; ";
 
-
-	Font titleFont = Font.font("Arial", FontWeight.BOLD, 72);
-	// GUI window size
-	int width = 1200;
-	int height = 800;
-
-
-	
 	// file names to use
 	public static final String QUESTIONBANKFILE = "categories";
 	public static final String PRACTICEATTEMPTFILE = "GameData/Practice/Attempt";
 	public static final String PRACTICEQUESTIONFILE = "GameData/Practice/Question";
-	public static final String GAMEQUESTIONSFILE = "GameData/Game/Questions";
-	public static final String GAMESCOREFILE = "GameData/Game/.Score";
-	public static final String TTSSPEEDFILE = "GameData/Setting/TTS";
 
-	// button settings
-	double buttonXPos = 480;
-	double buttonYStart = 160;
-	double buttonYOffset = 150;
-	double buttonXScale = 250;
-	double buttonYScale = 100;
-	String buttonStyle = "-fx-background-color: #d0e7ff; -fx-font-size: 1.75em; ";
-
-	// default data
-	public static final int DEFAULTSPEED = 160;
-	int ttsSpeed = DEFAULTSPEED;
-	int testSpeed = ttsSpeed;
 	String practiceCategory = "";
 	int attemptsRemaining = 0; 
-	String[] practiceQuestionSet = {"Don't edit the game files! :(","","sorry"};
-	String[] gameQuestionSet = {"Don't edit the game files! :(","","sorry"};
-	int currentScore=0;
-	
 	
 	Group practiceRoot = new Group();
 	Scene practiceScene = new Scene( practiceRoot );
 
 	StackPane practiceBackground = new StackPane();
-	Canvas practiceCanvas = new Canvas( width, height );
+	Canvas practiceCanvas = new Canvas( Quinzical.width, Quinzical.height );
 	
 	
 	
@@ -116,7 +86,7 @@ public class PracticeScene {
 			e.printStackTrace();
 		}
 		
-		practiceBackground.setStyle( backgroundStyle );
+		practiceBackground.setStyle( Quinzical.backgroundStyle );
 
 		practiceBackground.getChildren().add( practiceCanvas );
 		practiceRoot.getChildren().add( practiceBackground );
@@ -127,7 +97,7 @@ public class PracticeScene {
 		selectCategoryPrompt.setFill( Color.PURPLE );
 		selectCategoryPrompt.setStroke( Color.BLACK );
 		selectCategoryPrompt.setLineWidth(2);
-		selectCategoryPrompt.setFont( titleFont );
+		selectCategoryPrompt.setFont( Quinzical.titleFont );
 		selectCategoryPrompt.fillText( "Select Practice Category", 100, 100 );
 		selectCategoryPrompt.strokeText( "Select Practice Category", 100, 100 );
 
@@ -136,27 +106,12 @@ public class PracticeScene {
 		practiceReturnButton.setVisible(false);
 
 		// drop-down menu to choose category
-		ChoiceBox<String> categoryDropDown = new ChoiceBox<String>();
-		categoryDropDown.setLayoutX(buttonXPos - 30);
-		categoryDropDown.setLayoutY(buttonYStart);
-		categoryDropDown.setPrefSize(buttonXScale + 60, buttonYScale);
-		categoryDropDown.setStyle( buttonStyle );
-
-		try {
-			String line;
-			// Add category names to drop-down
-			BufferedReader readCategories = new BufferedReader(new FileReader(QUESTIONBANKFILE));
-			while((line = readCategories.readLine()) != null) {
-				if (line.indexOf('(') == -1 ) {
-					if (!line.isBlank()) {
-						categoryDropDown.getItems().add(line);
-					}
-				}
-			}
-			readCategories.close();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+		ChoiceBox<String> categoryDropDown = new ChoiceBox<String>(FXCollections.observableArrayList(
+				QuestionSelector.getCategoriesInFile(QUESTIONBANKFILE)));
+		categoryDropDown.setLayoutX(Quinzical.buttonXPos - 30);
+		categoryDropDown.setLayoutY(Quinzical.buttonYStart);
+		categoryDropDown.setPrefSize(Quinzical.buttonXScale + 60, Quinzical.buttonYScale);
+		categoryDropDown.setStyle( Quinzical.buttonStyle );
 
 		practiceRoot.getChildren().add(practiceConfirmButton);
 		practiceRoot.getChildren().add(practiceReturnButton);
@@ -180,15 +135,15 @@ public class PracticeScene {
 		Scene practiceQuestionScene = new Scene( practiceQuestionRoot );
 
 		StackPane practiceQuestionBackground = new StackPane();
-		Canvas practiceQuestionCanvas = new Canvas( width, height );
-		practiceQuestionBackground.setStyle( backgroundStyle );
+		Canvas practiceQuestionCanvas = new Canvas( Quinzical.width, Quinzical.height );
+		practiceQuestionBackground.setStyle( Quinzical.backgroundStyle );
 
 		// practice module title
 		GraphicsContext categoryTitlePrompt = practiceQuestionCanvas.getGraphicsContext2D();
 		categoryTitlePrompt.setFill( Color.PURPLE );
 		categoryTitlePrompt.setStroke( Color.BLACK );
 		categoryTitlePrompt.setLineWidth(2);
-		categoryTitlePrompt.setFont( titleFont );
+		categoryTitlePrompt.setFont( Quinzical.titleFont );
 		categoryTitlePrompt.fillText( "Practice Module", 270, 100 );
 		categoryTitlePrompt.strokeText( "Practice Module", 270, 100 );
 
@@ -197,19 +152,19 @@ public class PracticeScene {
 		practiceQuestionPrompt.setWrappingWidth( 800 );
 		practiceQuestionPrompt.setStyle("-fx-font-size: 2.5em; ");
 		practiceQuestionPrompt.setTextAlignment(TextAlignment.CENTER);
-		practiceQuestionPrompt.setLayoutY(buttonYStart);
+		practiceQuestionPrompt.setLayoutY(Quinzical.buttonYStart);
 		practiceQuestionPrompt.setLayoutX(200);
 
 		// user answer field
 		TextField answerField = new TextField("Type Response Here!");
-		answerField.setLayoutX( buttonXPos - 75 ) ;
-		answerField.setLayoutY( buttonYStart + buttonYOffset );
+		answerField.setLayoutX( Quinzical.buttonXPos - 75 ) ;
+		answerField.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset );
 		answerField.setPrefSize( 400 , 50 );
-		answerField.setStyle( buttonStyle );
+		answerField.setStyle( Quinzical.buttonStyle );
 
 		if (attemptsRemaining == 1) {
 			// make field text red and display the first letter
-			answerField.setStyle( buttonStyle + " -fx-text-fill: #B43757;");
+			answerField.setStyle( Quinzical.buttonStyle + " -fx-text-fill: #B43757;");
 			String firstLetter = "c"; // Placeholder
 			answerField.setText(practiceQuestionSet[1]+ " " + firstLetter.toUpperCase());
 		} 
@@ -217,7 +172,7 @@ public class PracticeScene {
 		// display remaining attempts
 		Text displayAttempts = new Text(attemptsRemaining + "\nAttempts Remaining");
 		displayAttempts.setLayoutX( 50 ) ;
-		displayAttempts.setLayoutY( buttonYStart + buttonYOffset * 4 );
+		displayAttempts.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset * 4 );
 		displayAttempts.setTextAlignment(TextAlignment.CENTER);
 		displayAttempts.setStyle("-fx-background-color: #d0e7ff; -fx-font-size: 1.75em; ");
 
@@ -339,7 +294,7 @@ public class PracticeScene {
 						answerField.setText(practiceQuestionSet[1]+ " ");
 						if (attemptsRemaining == 1) {
 							// make text red and display the first letter
-							answerField.setStyle( buttonStyle + " -fx-text-fill: #B43757;");
+							answerField.setStyle( Quinzical.buttonStyle + " -fx-text-fill: #B43757;");
 							String firstLetter = "" + practiceQuestionSet[2].charAt(0);
 							answerField.setText(practiceQuestionSet[1]+ " " + firstLetter.toUpperCase());
 						}

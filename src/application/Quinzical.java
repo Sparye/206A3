@@ -1,20 +1,9 @@
 package application;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Random;
 
 import data.Attempt;
 import data.Score;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -22,10 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -33,10 +19,9 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import questions.LineToVar;
 import questions.QuestionSelector;
 
-public class GUI extends Application
+public class Quinzical extends Application
 {
 	public static void main(String[] args) 
 	{
@@ -77,8 +62,6 @@ public class GUI extends Application
 	// default data
 	String practiceCategory = "";
 	int attemptsRemaining = 0; 
-	String[] practiceQuestionSet = {"Don't edit the game files! :(","","sorry"};
-	String[] gameQuestionSet = {"Don't edit the game files! :(","","sorry"};
 	int currentScore = 0;
 
 	@Override
@@ -89,33 +72,9 @@ public class GUI extends Application
 		guiStage.setTitle( "Quinzical" );
 
 		// fetch data
-	/**	try {
-			// get practice attempts
-			BufferedReader getAttempts = new BufferedReader(new FileReader(PRACTICEATTEMPTFILE));
-			String attemptLine = getAttempts.readLine();
-			if (attemptLine == null) {
-				Attempt.save(attemptsRemaining, PRACTICEATTEMPTFILE);
-			} else {
-				attemptsRemaining = Integer.parseInt( attemptLine );
-			}
-			getAttempts.close();
-			if (attemptsRemaining > 0) {
-				// get practice question
-				BufferedReader getPracticeQuestion = new BufferedReader(new FileReader(PRACTICEQUESTIONFILE));
-				String practiceQuestionLine = getPracticeQuestion.readLine();
-				getPracticeQuestion.close();
-				if (practiceQuestionLine != null) {
-					String practiceQuestionWhole = practiceQuestionLine;
-					practiceQuestionSet = LineToVar.toVarSet(practiceQuestionWhole);
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}**/
-		
 		TextToSpeech.setup();
 		Timer.setup();
-
+		QuestionSelector.setupLock();
 
 		//  Main Menu setup
 		Group root = new Group();
@@ -222,7 +181,7 @@ public class GUI extends Application
 		hearButton.setPrefSize( buttonXScale/2 , buttonYScale/2 );
 		hearButton.setStyle("-fx-background-color: #003399; -fx-font-size: 1.00em; -fx-text-fill: white; ");
 		hearButton.setOnAction(e-> {
-			TextToSpeech.say(practiceQuestionSet[0]);
+			TextToSpeech.say(PracticeScene.practiceQuestionSet[0]);
 		});
 
 		//button to speak the game question
@@ -232,7 +191,7 @@ public class GUI extends Application
 		hearGameButton.setPrefSize( buttonXScale/2 , buttonYScale/2 );
 		hearGameButton.setStyle("-fx-background-color: #003399; -fx-font-size: 1.00em; -fx-text-fill: white; ");
 		hearGameButton.setOnAction(e-> {
-			TextToSpeech.say(gameQuestionSet[0]);
+			TextToSpeech.say(QuestionScene.gameQuestionSet[0]);
 		});
 
 		// button used to lock in a game question attempt
@@ -254,23 +213,8 @@ public class GUI extends Application
 			guiStage.setScene(menuScene);
 		});
 		
-		// timer label format
-		Timer.timerLabel.setLayoutX(900);
-		Timer.timerLabel.setLayoutY(buttonYStart + buttonYOffset * 2 + 40);
-		Timer.timerLabel.setStyle("-fx-font-size: 10em");
-
-		// I dont know button
+		// I don't know button
 		Button dontKnowButton = new Button( "Don't know" );
-		dontKnowButton.setLayoutX( buttonXPos );
-		dontKnowButton.setLayoutY( buttonYStart + buttonYOffset * 3 );
-		dontKnowButton.setPrefSize( buttonXScale , buttonYScale );
-		dontKnowButton.setStyle("-fx-background-color: #B43757; -fx-font-size: 1.75em; ");
-		dontKnowButton.setOnAction(e-> {
-			GridScene gs = new GridScene(restartButton, menuButton, gameLockInButton, hearGameButton, dontKnowButton, guiStage);
-			guiStage.setScene(gs.getGridScene());
-
-		}
-				);
 
 		root.getChildren().add(gameButton);
 		root.getChildren().add(practiceButton);
@@ -427,6 +371,7 @@ public class GUI extends Application
 				Attempt.save(attemptsRemaining, PRACTICEATTEMPTFILE);
 				QuestionSelector.reset(GAMEQUESTIONSFILE);
 				Score.reset(GAMESCOREFILE);
+				QuestionSelector.lock();
 
 				resetConfirmButton.setDisable(true);
 			}

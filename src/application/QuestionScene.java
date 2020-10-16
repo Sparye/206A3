@@ -1,7 +1,5 @@
 package application;
 
-import java.io.FileNotFoundException;
-
 import data.Attempt;
 import data.Score;
 import javafx.beans.value.ChangeListener;
@@ -48,11 +46,7 @@ public class QuestionScene {
 		public Scene getQuestionScene() {
 			TimedQuestion sayQuestion = new TimedQuestion(gameQuestionSet[0]);
 			sayQuestion.start();
-			try {
-				currentScore=Score.getSumAndSave("0");
-			} catch (FileNotFoundException ev) {
-				ev.printStackTrace();
-			}
+			currentScore=Score.getSumAndSave("0");
 			//game question scene
 			Group gameQuestionRoot = new Group();
 			Scene gameQuestionScene = new Scene(gameQuestionRoot);
@@ -137,12 +131,7 @@ public class QuestionScene {
 				gameQuestionRoot.getChildren().remove(Timer.timerLabel);
 				
 				if(Attempt.isCorrect(answerField.getText(), gameQuestionSet)) {
-
-					try {
-						currentScore=Score.getSumAndSave(moneyButton.getText());
-					} catch (FileNotFoundException e1) {
-						e1.printStackTrace();
-					}
+					currentScore=Score.getSumAndSave(moneyButton.getText());
 					
 					displayScore.setText(""+currentScore);
 					gameQuestionRoot.getChildren().remove(answerField);

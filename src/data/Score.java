@@ -8,23 +8,20 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class Score {
-    public static Integer getSumAndSave(String selectedPoint) throws FileNotFoundException {
+    public static Integer getSumAndSave(String selectedPoint) {
+    	int currentWinning = Integer.parseInt(selectedPoint);
     	File file =new File("./GameData/Game/.Score");
-    	Scanner scan = new Scanner(file);
-    	int currentWinning = Integer.parseInt(scan.nextLine());
-
-
-    	currentWinning = currentWinning + Integer.parseInt(selectedPoint);
-
-
-    	scan.close();
-    	try {
+    	Scanner scan;
+		try {
+			scan = new Scanner(file);
+			currentWinning = Integer.parseInt(scan.nextLine());
+    		currentWinning = currentWinning + Integer.parseInt(selectedPoint);
+    		scan.close();
 			FileWriter fw = new FileWriter(file);
 			PrintWriter pw = new PrintWriter(fw);
 			pw.print(currentWinning);
 			pw.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     	

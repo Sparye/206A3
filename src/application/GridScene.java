@@ -1,7 +1,6 @@
 package application;
-
-import java.io.FileNotFoundException;
 import data.Score;
+import data.Trophies;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -101,12 +100,8 @@ public class GridScene{
 		if(checktotal==0) {
 			// display the question
 			Text WinningPrompt=new Text();;
-			try {
-				int score = Score.getSumAndSave("0");
-				WinningPrompt.setText( "You have completed all questions!\nYour final score is: "+ score);
-			} catch (FileNotFoundException ev) {
-				ev.printStackTrace();
-			}
+			int score = Score.getSumAndSave("0");
+			WinningPrompt.setText( "You have completed all questions!\nYour final score is: "+ score + Trophies.get());
 			WinningPrompt.setWrappingWidth( 800 );
 			WinningPrompt.setStyle("-fx-font-size: 2.5em; ");
 			WinningPrompt.setTextAlignment(TextAlignment.CENTER);

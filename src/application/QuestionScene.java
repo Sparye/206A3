@@ -97,6 +97,7 @@ public class QuestionScene {
 				public void changed(ObservableValue<? extends String> ov, String old_val, String new_val) {
 					if (new_val.equals("0")) {
 						Timer.timerLabel.textProperty().unbind();
+						Timer.timerLabel.setText("");
 						Timer.timerLabel.textProperty().removeListener(this);
 						gameQuestionRoot.getChildren().remove(Timer.timerLabel);
 						displayScore.setText(""+currentScore);
@@ -116,9 +117,10 @@ public class QuestionScene {
 			dontKnowButton.setLayoutX( Quinzical.buttonXPos );
 			dontKnowButton.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset * 3 );
 			dontKnowButton.setPrefSize( Quinzical.buttonXScale , Quinzical.buttonYScale );
-			dontKnowButton.setStyle("-fx-background-color: #B43757; -fx-font-size: 1.75em; ");
+			dontKnowButton.setStyle("-fx-text-fill: #D4D4D4; -fx-background-color: #B43757; -fx-font-size: 1.75em; ");
 			dontKnowButton.setOnAction(e-> {
 				Timer.timerLabel.textProperty().unbind();
+				Timer.timerLabel.setText("");
 				Timer.timerLabel.textProperty().removeListener(changeListener);
 				gameQuestionRoot.getChildren().remove(Timer.timerLabel);
 				GridScene gs = new GridScene(restartButton, menuButton, gameLockInButton,
@@ -127,6 +129,7 @@ public class QuestionScene {
 
 			gameLockInButton.setOnAction(ev -> {
 				Timer.timerLabel.textProperty().unbind();
+				Timer.timerLabel.setText("");
 				Timer.timerLabel.textProperty().removeListener(changeListener);
 				gameQuestionRoot.getChildren().remove(Timer.timerLabel);
 				

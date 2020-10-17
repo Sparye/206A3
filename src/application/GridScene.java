@@ -5,6 +5,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
@@ -42,19 +43,28 @@ public class GridScene{
 
 	Canvas gameCanvas = new Canvas( Quinzical.width, Quinzical.height );
 	GridPane gameGrid = new GridPane();
-	// create new question set when game is reset
-	/**
-	 * 
-	 * 	
-	 * 
-	 */
-
+	
+	//Label for displaying score
+	Label displayScore;
+	Label scoreHeading = new Label(" Score");
+	
+	Button newGameButton = new Button( "New Game" );
 
 
 	public Scene getGridScene() {
 		gameBackground.setStyle( Quinzical.backgroundStyle );
-
-		GridPane gameGrid = new GridPane();
+		
+		newGameButton.setLayoutX( Quinzical.buttonXPos + 380);
+		newGameButton.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset * 3 );
+		newGameButton.setPrefSize( Quinzical.buttonXScale , Quinzical.buttonYScale );
+		newGameButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 2em; ");
+		newGameButton.setOnAction(e-> {
+			Score.reset(GAMESCOREFILE);
+			QuestionSelector.reset(GAMEQUESTIONSFILE);
+			GridScene gs = new GridScene(restartButton, menuButton, gameLockInButton, hearGameButton, dontKnowButton, guiStage);
+			guiStage.setScene(gs.getGridScene());
+		});
+	//	GridPane gameGrid = new GridPane();
 		// create new question set when game is reset
 		if(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).size() < 1) {
 			QuestionSelector.copyRandomCategories(QUESTIONBANKFILE, GAMEQUESTIONSFILE);
@@ -120,6 +130,21 @@ public class GridScene{
 
 			guiStage.setScene( gameScene );
 		}else {
+			currentScore=Score.getSumAndSave("0");
+			displayScore = new Label(" "+currentScore);
+			displayScore.setLayoutX( 77 );
+			displayScore.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset * 2 + 170 );
+			displayScore.setTextAlignment(TextAlignment.CENTER);
+			displayScore.setStyle("-fx-font-size: 5em; ");
+			
+
+			scoreHeading.setLayoutX( 77 );
+			scoreHeading.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset * 2 + 150 );
+			scoreHeading.setTextAlignment(TextAlignment.CENTER);
+			scoreHeading.setStyle("-fx-font-size: 2em; ");
+			
+			
+
 			//buttons for money grid
 			for(int j=0;j<QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).size();j++) {
 				//Labels for displaying categories in game module
@@ -155,13 +180,19 @@ public class GridScene{
 					}
 
 				}
+				
+
 
 			}
+
 
 			gameGrid.setLayoutX( Quinzical.buttonXPos -250);
 			gameGrid.setLayoutY(Quinzical.buttonYStart);
 			gameBackground.getChildren().add( gameCanvas );
 			gameRoot.getChildren().add( gameBackground );
+			gameRoot.getChildren().add( displayScore );
+			gameRoot.getChildren().add( scoreHeading );
+			gameRoot.getChildren().add(newGameButton);
 			gameRoot.getChildren().add(menuButton);
 			gameRoot.getChildren().add(gameGrid);
 

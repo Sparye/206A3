@@ -78,7 +78,7 @@ public class TextToSpeech {
 		incorrectPrompts.add("Objection!");
 		incorrectPrompts.add("Incorrect!");
 		incorrectPrompts.add("Not quite right!");
-		incorrectPrompts.add("Needs more practice!");
+		incorrectPrompts.add("Try the practice mode!");
 		incorrectPrompts.add("Sorry, Wrong answer!");
 		incorrectPrompts.add("Almost!");
 		Collections.shuffle(incorrectPrompts);
@@ -86,7 +86,19 @@ public class TextToSpeech {
 		String msg = incorrectPrompts.get(0);
 		TextToSpeech.say(msg);
 	}
+	
+	public static void outOfTime() {
+		ArrayList<String> noTimePrompts = new ArrayList<String>();
+		noTimePrompts.add("Sorry, out of time!");
+		noTimePrompts.add("time ran out!");
+		noTimePrompts.add("The timer reached zero!");
+		noTimePrompts.add("Try the practice mode!");
+		noTimePrompts.add("try Adjusting the timer in settings!");
+		Collections.shuffle(noTimePrompts);
 		
+		String msg = noTimePrompts.get(0);
+		TextToSpeech.say(msg);
+	}
 	
 	public static void save() {
 		ttsSpeed = testSpeed;

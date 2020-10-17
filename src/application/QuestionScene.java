@@ -107,7 +107,7 @@ public class QuestionScene {
 						dontKnowButton.setText("Question Grid");
 						String answer="\n\nUnfortunately, the correct answer is "+gameQuestionSet[2]+".";
 						gameQuestionPrompt.setText(answer);
-						TextToSpeech.say("Sorry, No more time!");
+						TextToSpeech.outOfTime();
 					}
 				}
 			};

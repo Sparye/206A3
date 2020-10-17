@@ -200,9 +200,9 @@ public class Quinzical extends Application
 		gameLockInButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
 		gameLockInButton.setPrefSize( buttonXScale , buttonYScale );
 		gameLockInButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 2em; ");
-
+		
 		// restart game module button
-		Button restartButton = new Button( "Play again" );
+		Button restartButton = new Button( "New Game" );
 		restartButton.setLayoutX( buttonXPos );
 		restartButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
 		restartButton.setPrefSize( buttonXScale , buttonYScale );
@@ -210,11 +210,9 @@ public class Quinzical extends Application
 		restartButton.setOnAction(e-> {
 			Score.reset(GAMESCOREFILE);
 			QuestionSelector.reset(GAMEQUESTIONSFILE);
-			guiStage.setScene(menuScene);
+			GridScene gs = new GridScene(restartButton, menuButton, gameLockInButton, hearGameButton, guiStage);
+			guiStage.setScene(gs.getGridScene());
 		});
-		
-		// I don't know button
-		Button dontKnowButton = new Button( "Don't know" );
 
 		root.getChildren().add(gameButton);
 		root.getChildren().add(practiceButton);
@@ -225,7 +223,7 @@ public class Quinzical extends Application
 
 		// button handlers
 		gameButton.setOnAction(e -> {
-			GridScene gs = new GridScene(restartButton, menuButton, gameLockInButton, hearGameButton, dontKnowButton, guiStage);
+			GridScene gs = new GridScene(restartButton, menuButton, gameLockInButton, hearGameButton,  guiStage);
 			guiStage.setScene(gs.getGridScene());
 		}
 				

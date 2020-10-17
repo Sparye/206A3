@@ -25,12 +25,11 @@ public class QuestionScene {
 	
 	public static String[] gameQuestionSet = {"Do not edit the game files!","","sorry"};
 	
-	public QuestionScene(Button inRestartButton,Button inMenuButton,Button inGameLockInButton,Button inHearGameButton,Button inDontKnowButton,Stage inGuiStage,String[] inQuestionSet,Button inMoneyButton) {
+	public QuestionScene(Button inRestartButton,Button inMenuButton,Button inGameLockInButton,Button inHearGameButton,Stage inGuiStage,String[] inQuestionSet,Button inMoneyButton) {
 		restartButton = inRestartButton;
 		menuButton = inMenuButton;
 		gameLockInButton = inGameLockInButton;
 		hearGameButton = inHearGameButton;
-		dontKnowButton = inDontKnowButton;
 		guiStage = inGuiStage;
 		gameQuestionSet = inQuestionSet;
 		moneyButton = inMoneyButton;
@@ -80,11 +79,17 @@ public class QuestionScene {
 			answerField.setStyle( Quinzical.buttonStyle );
 
 			//display current score
-			Label displayScore = new Label("" + currentScore);
-			displayScore.setLayoutX( 75 );
-			displayScore.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset * 2 + 40 );
+			Label displayScore = new Label(" "+currentScore);
+			displayScore.setLayoutX( 77 );
+			displayScore.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset * 2 + 170 );
 			displayScore.setTextAlignment(TextAlignment.CENTER);
-			displayScore.setStyle("-fx-font-size: 9em; ");
+			displayScore.setStyle("-fx-font-size: 5em; ");
+			
+			Label scoreHeading = new Label("SCORE");
+			scoreHeading.setLayoutX( 77 );
+			scoreHeading.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset * 2 + 150 );
+			scoreHeading.setTextAlignment(TextAlignment.CENTER);
+			scoreHeading.setStyle("-fx-font-size: 2em; ");
 			
 			answerField.textProperty().addListener(
 					(ObservableValue<? extends String> ov, String old_val, String new_val) -> {
@@ -113,7 +118,7 @@ public class QuestionScene {
 			};
 			
 			Timer.timerLabel.textProperty().addListener(changeListener);
-			
+			dontKnowButton = new Button("Don't know");
 			dontKnowButton.setLayoutX( Quinzical.buttonXPos );
 			dontKnowButton.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset * 3 );
 			dontKnowButton.setPrefSize( Quinzical.buttonXScale , Quinzical.buttonYScale );
@@ -124,7 +129,7 @@ public class QuestionScene {
 				Timer.timerLabel.textProperty().removeListener(changeListener);
 				gameQuestionRoot.getChildren().remove(Timer.timerLabel);
 				GridScene gs = new GridScene(restartButton, menuButton, gameLockInButton,
-						hearGameButton, dontKnowButton, guiStage);
+						hearGameButton, guiStage);
 				guiStage.setScene(gs.getGridScene());});
 
 			gameLockInButton.setOnAction(ev -> {
@@ -162,6 +167,7 @@ public class QuestionScene {
 			gameQuestionRoot.getChildren().add( answerField );
 			gameQuestionRoot.getChildren().add( gameLockInButton );
 			gameQuestionRoot.getChildren().add( displayScore );
+			gameQuestionRoot.getChildren().add( scoreHeading );
 			gameQuestionRoot.getChildren().add( hearGameButton );
 			gameQuestionRoot.getChildren().add( dontKnowButton );
 			gameQuestionRoot.getChildren().add( Timer.timerLabel );

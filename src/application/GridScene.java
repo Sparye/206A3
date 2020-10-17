@@ -14,16 +14,15 @@ import javafx.stage.Stage;
 import questions.QuestionSelector;
 
 public class GridScene{
-	Button restartButton,menuButton,gameLockInButton,hearGameButton,dontKnowButton;
+	Button restartButton,menuButton,gameLockInButton,hearGameButton;
 
 	Stage guiStage;
 
-	public GridScene(Button inRestartButton,Button inMenuButton,Button inGameLockInButton,Button inHearGameButton,Button inDontKnowButton,Stage inGuiStage) {
+	public GridScene(Button inRestartButton,Button inMenuButton,Button inGameLockInButton,Button inHearGameButton,Stage inGuiStage) {
 		restartButton = inRestartButton;
 		menuButton = inMenuButton;
 		gameLockInButton = inGameLockInButton;
 		hearGameButton = inHearGameButton;
-		dontKnowButton = inDontKnowButton;
 		guiStage = inGuiStage;
 	}
 
@@ -46,7 +45,7 @@ public class GridScene{
 	
 	//Label for displaying score
 	Label displayScore;
-	Label scoreHeading = new Label(" Score");
+	Label scoreHeading = new Label("SCORE");
 	
 	Button newGameButton = new Button( "New Game" );
 
@@ -61,7 +60,7 @@ public class GridScene{
 		newGameButton.setOnAction(e-> {
 			Score.reset(GAMESCOREFILE);
 			QuestionSelector.reset(GAMEQUESTIONSFILE);
-			GridScene gs = new GridScene(restartButton, menuButton, gameLockInButton, hearGameButton, dontKnowButton, guiStage);
+			GridScene gs = new GridScene(restartButton, menuButton, gameLockInButton, hearGameButton, guiStage);
 			guiStage.setScene(gs.getGridScene());
 		});
 	//	GridPane gameGrid = new GridPane();
@@ -161,11 +160,11 @@ public class GridScene{
 					moneyButton.setPrefSize(Quinzical.buttonXScale/2, Quinzical.buttonYScale/2);
 					moneyButton.setStyle("-fx-background-color: #003399; -fx-font-size: 1.75em; -fx-text-fill: white; -fx-font-weight: bold");
 					moneyButton.setOnAction(eve->{
-						dontKnowButton.setText("Don't know");
+
 						//	System.out.println(QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE)[0]);
 						QuestionScene.gameQuestionSet=QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE);	
 						QuestionSelector.deleteLinesContaining(QuestionScene.gameQuestionSet[0], GAMEQUESTIONSFILE);
-						QuestionScene qs = new QuestionScene(restartButton, menuButton, gameLockInButton, hearGameButton, dontKnowButton, guiStage, QuestionScene.gameQuestionSet, moneyButton);
+						QuestionScene qs = new QuestionScene(restartButton, menuButton, gameLockInButton, hearGameButton,  guiStage, QuestionScene.gameQuestionSet, moneyButton);
 						guiStage.setScene(qs.getQuestionScene());
 				
 

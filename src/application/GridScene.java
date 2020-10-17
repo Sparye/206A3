@@ -48,7 +48,7 @@ public class GridScene{
 	Label scoreHeading = new Label("SCORE");
 	
 	Button newGameButton = new Button( "New Game" );
-	Button continueButton = new Button( "Money Grid" );
+	Button continueButton = new Button( "Question Grid" );
 
 
 	public Scene getGridScene() {
@@ -64,7 +64,7 @@ public class GridScene{
 			GridScene gs = new GridScene(restartButton, menuButton, gameLockInButton, hearGameButton, guiStage);
 			guiStage.setScene(gs.getGridScene());
 		});
-	//	GridPane gameGrid = new GridPane();
+		GridPane gameGrid = new GridPane();
 		// create new question set when game is reset
 		if(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).size() < 1) {
 			QuestionSelector.copyRandomCategories(QUESTIONBANKFILE, GAMEQUESTIONSFILE);
@@ -109,14 +109,14 @@ public class GridScene{
 			gameGrid.setLayoutY(Quinzical.buttonYStart);
 			gameBackground.getChildren().add( gameCanvas );
 			gameRoot.getChildren().add( gameBackground );
-	//		gameRoot.getChildren().add( menuButton );
-			gameRoot.getChildren().add( continueButton );
+			gameRoot.getChildren().add( menuButton );
+		//	gameRoot.getChildren().add( continueButton );
 			gameRoot.getChildren().add(restartButton);
 			gameRoot.getChildren().add(WinningPrompt);
 			//	gameRoot.getChildren().add(gameGrid);
 
-			guiStage.setScene( gameScene );
-			
+			//guiStage.setScene( gameScene );
+			return gameScene;
 		}
 
 		if(checktotal==0) {
@@ -140,7 +140,8 @@ public class GridScene{
 			gameRoot.getChildren().add(WinningPrompt);
 			//	gameRoot.getChildren().add(gameGrid);
 
-			guiStage.setScene( gameScene );
+			//guiStage.setScene( gameScene );
+			return gameScene;
 		}else {
 			currentScore=Score.getSumAndSave("0");
 			displayScore = new Label(" "+currentScore);

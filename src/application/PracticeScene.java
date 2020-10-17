@@ -28,6 +28,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import questions.LineToVar;
 import questions.QuestionSelector;
+import questions.TextToSpeech;
 
 public class PracticeScene {
 	Button practiceConfirmButton,practiceReturnButton,menuButton,practiceLockInButton,hearButton;

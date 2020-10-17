@@ -48,6 +48,7 @@ public class GridScene{
 	Label scoreHeading = new Label("SCORE");
 	
 	Button newGameButton = new Button( "New Game" );
+	Button continueButton = new Button( "Money Grid" );
 
 
 	public Scene getGridScene() {
@@ -83,10 +84,21 @@ public class GridScene{
 		
 		if (emptyCategories >= 2 && !QuestionSelector.isUnlocked()) {
 			QuestionSelector.unlock();
+			
+			continueButton.setLayoutX( Quinzical.buttonXPos );
+			continueButton.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset * 3 );
+			continueButton.setPrefSize( Quinzical.buttonXScale , Quinzical.buttonYScale );
+			continueButton.setStyle("-fx-text-fill: #D4D4D4; -fx-background-color: #B43757; -fx-font-size: 1.75em; ");
+			continueButton.setOnAction(e->{
+				GridScene gs = new GridScene(restartButton, menuButton, gameLockInButton,
+						hearGameButton, guiStage);
+				guiStage.setScene(gs.getGridScene());
+			});
+			
 			Text WinningPrompt=new Text();;
 			WinningPrompt.setText( "You have unlocked the International Section!\n"
 					+ " You can restart to play games with International questions,"
-					+ " or return to the menu then continue with the current game.");
+					+ " or continue with the current game.");
 			WinningPrompt.setWrappingWidth( 800 );
 			WinningPrompt.setStyle("-fx-font-size: 2.5em; ");
 			WinningPrompt.setTextAlignment(TextAlignment.CENTER);
@@ -97,7 +109,8 @@ public class GridScene{
 			gameGrid.setLayoutY(Quinzical.buttonYStart);
 			gameBackground.getChildren().add( gameCanvas );
 			gameRoot.getChildren().add( gameBackground );
-			gameRoot.getChildren().add( menuButton );
+	//		gameRoot.getChildren().add( menuButton );
+			gameRoot.getChildren().add( continueButton );
 			gameRoot.getChildren().add(restartButton);
 			gameRoot.getChildren().add(WinningPrompt);
 			//	gameRoot.getChildren().add(gameGrid);

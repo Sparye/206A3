@@ -1,4 +1,4 @@
-package application;
+package questions;
 
 import javafx.application.Platform;
 

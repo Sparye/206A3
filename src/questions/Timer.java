@@ -1,4 +1,4 @@
-package application;
+package questions;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import application.Quinzical;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -41,8 +42,8 @@ public class Timer implements Runnable {
 	public static void setup() {
 		// timer label format
 		Timer.timerLabel.setLayoutX(900);
-		Timer.timerLabel.setLayoutY(Quinzical.buttonYStart + Quinzical.buttonYOffset * 2 + 40);
-		Timer.timerLabel.setStyle("-fx-font-size: 10em");
+		Timer.timerLabel.setLayoutY(Quinzical.buttonYStart + Quinzical.buttonYOffset * 2 + 170);
+		Timer.timerLabel.setStyle("-fx-font-size: 5em");
 		try {
 			BufferedReader getLength = new BufferedReader(new FileReader(TIMERLENGTHFILE));
 			String lengthLine = getLength.readLine();

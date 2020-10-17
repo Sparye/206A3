@@ -17,6 +17,9 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import questions.QuestionSelector;
+import questions.TextToSpeech;
+import questions.TimedQuestion;
+import questions.Timer;
 
 public class QuestionScene {
 	Button restartButton,menuButton,gameLockInButton,hearGameButton,dontKnowButton,moneyButton;
@@ -105,7 +108,7 @@ public class QuestionScene {
 						Timer.timerLabel.setText("");
 						Timer.timerLabel.textProperty().removeListener(this);
 						gameQuestionRoot.getChildren().remove(Timer.timerLabel);
-						displayScore.setText(""+currentScore);
+						displayScore.setText(" "+currentScore);
 						gameQuestionRoot.getChildren().remove(answerField);
 						gameQuestionRoot.getChildren().remove(gameLockInButton);
 						gameQuestionRoot.getChildren().remove(hearGameButton);
@@ -141,7 +144,7 @@ public class QuestionScene {
 				if(Attempt.isCorrect(answerField.getText(), gameQuestionSet)) {
 					currentScore=Score.getSumAndSave(moneyButton.getText());
 					
-					displayScore.setText(""+currentScore);
+					displayScore.setText(" "+currentScore);
 					gameQuestionRoot.getChildren().remove(answerField);
 					gameQuestionRoot.getChildren().remove(gameLockInButton);
 					gameQuestionRoot.getChildren().remove(hearGameButton);
@@ -150,7 +153,7 @@ public class QuestionScene {
 					gameQuestionPrompt.setText(answer);
 					TextToSpeech.correct();
 				}else {
-					displayScore.setText(""+currentScore);
+					displayScore.setText(" "+currentScore);
 					gameQuestionRoot.getChildren().remove(answerField);
 					gameQuestionRoot.getChildren().remove(gameLockInButton);
 					gameQuestionRoot.getChildren().remove(hearGameButton);

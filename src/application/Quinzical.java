@@ -20,6 +20,8 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import questions.QuestionSelector;
+import questions.TextToSpeech;
+import questions.Timer;
 
 public class Quinzical extends Application
 {

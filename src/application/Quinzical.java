@@ -133,12 +133,12 @@ public class Quinzical extends Application
 		practiceConfirmButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 2em; ");
 
 		// button used to return to in-progress practice question
-		Button practiceReturnButton = new Button( "Return to Question" );
+	/**	Button practiceReturnButton = new Button( "Return to Question" );
 		practiceReturnButton.setLayoutX( buttonXPos );
 		practiceReturnButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
 		practiceReturnButton.setPrefSize( buttonXScale , buttonYScale );
 		practiceReturnButton.setStyle("-fx-background-color: #EC9706; -fx-font-size: 1.8em; ");
-
+**/
 		// button used to lock in a practice question attempt
 		Button practiceLockInButton = new Button( "I'm Sure!" );
 		practiceLockInButton.setLayoutX( buttonXPos );
@@ -184,7 +184,7 @@ public class Quinzical extends Application
 		});
 
 		practiceButton.setOnAction(e -> {
-			PracticeScene ps = new PracticeScene(practiceConfirmButton, practiceReturnButton, menuButton, practiceLockInButton, hearButton, guiStage);
+			PracticeScene ps = new PracticeScene(menuButton, guiStage);
 			guiStage.setScene(ps.getPracticeScene());
 		});
 

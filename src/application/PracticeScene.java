@@ -31,17 +31,28 @@ import questions.QuestionSelector;
 import questions.TextToSpeech;
 
 public class PracticeScene {
-	Button practiceConfirmButton,practiceReturnButton,menuButton,practiceLockInButton,hearButton;
+	Button practiceConfirmButton,practiceReturnButton,menuButton;
 	public static String[] practiceQuestionSet = {"Do not edit the game files!","","sorry"};
 	Stage guiStage;
 	
-	public PracticeScene(Button inPracticeConfirmButton,Button inPracticeReturnButton, Button inMenuButton,Button inPracticeLockInButton,Button inHearButton,Stage inGuiStage) {
-		practiceConfirmButton=inPracticeConfirmButton;
-		practiceReturnButton=inPracticeReturnButton;
+	public PracticeScene(Button inMenuButton,Stage inGuiStage) {
+
 		menuButton=inMenuButton;
-		practiceLockInButton=inPracticeLockInButton;
-		hearButton=inHearButton;
 		guiStage=inGuiStage;
+		
+		// button used to return to in-progress practice question
+		practiceReturnButton = new Button( "Return to Question" );
+		practiceReturnButton.setLayoutX( Quinzical.buttonXPos );
+		practiceReturnButton.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset * 2 );
+		practiceReturnButton.setPrefSize( Quinzical.buttonXScale , Quinzical.buttonYScale );
+		practiceReturnButton.setStyle("-fx-background-color: #EC9706; -fx-font-size: 1.8em; ");
+		
+		// button used to confirm category selection in practice module
+		practiceConfirmButton = new Button( "Practice This!" );
+		practiceConfirmButton.setLayoutX( Quinzical.buttonXPos );
+		practiceConfirmButton.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset * 1 );
+		practiceConfirmButton.setPrefSize( Quinzical.buttonXScale , Quinzical.buttonYScale );
+		practiceConfirmButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 2em; ");
 		
 	}
 
@@ -58,10 +69,7 @@ public class PracticeScene {
 
 	StackPane practiceBackground = new StackPane();
 	Canvas practiceCanvas = new Canvas( Quinzical.width, Quinzical.height );
-	
-	
-	
-	
+		
 	public Scene getPracticeScene() {
 		try {
 			// get practice attempts
@@ -88,7 +96,6 @@ public class PracticeScene {
 		}
 		
 		practiceBackground.setStyle( Quinzical.backgroundStyle );
-
 		practiceBackground.getChildren().add( practiceCanvas );
 		practiceRoot.getChildren().add( practiceBackground );
 		practiceRoot.getChildren().add(menuButton);
@@ -129,187 +136,17 @@ public class PracticeScene {
 			practiceReturnButton.setVisible(true);
 		}
 
-	//	guiStage.setScene( practiceScene );
-
-		// practice question scene
-		Group practiceQuestionRoot = new Group();
-		Scene practiceQuestionScene = new Scene( practiceQuestionRoot );
-
-		StackPane practiceQuestionBackground = new StackPane();
-		Canvas practiceQuestionCanvas = new Canvas( Quinzical.width, Quinzical.height );
-		practiceQuestionBackground.setStyle( Quinzical.backgroundStyle );
-
-		// practice module title
-		GraphicsContext categoryTitlePrompt = practiceQuestionCanvas.getGraphicsContext2D();
-		categoryTitlePrompt.setFill( Color.PURPLE );
-		categoryTitlePrompt.setStroke( Color.BLACK );
-		categoryTitlePrompt.setLineWidth(2);
-		categoryTitlePrompt.setFont( Quinzical.titleFont );
-		categoryTitlePrompt.fillText( "Practice Module", 270, 100 );
-		categoryTitlePrompt.strokeText( "Practice Module", 270, 100 );
-
-		// displays the question
-		Text practiceQuestionPrompt = new Text( practiceQuestionSet[0] );
-		practiceQuestionPrompt.setWrappingWidth( 800 );
-		practiceQuestionPrompt.setStyle("-fx-font-size: 2.5em; ");
-		practiceQuestionPrompt.setTextAlignment(TextAlignment.CENTER);
-		practiceQuestionPrompt.setLayoutY(Quinzical.buttonYStart);
-		practiceQuestionPrompt.setLayoutX(200);
-
-		// user answer field
-		TextField answerField = new TextField("Type Response Here!");
-		answerField.setLayoutX( Quinzical.buttonXPos - 75 ) ;
-		answerField.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset );
-		answerField.setPrefSize( 400 , 50 );
-		answerField.setStyle( Quinzical.buttonStyle );
-
-		if (attemptsRemaining == 1) {
-			// make field text red and display the first letter
-			answerField.setStyle( Quinzical.buttonStyle + " -fx-text-fill: #B43757;");
-			String firstLetter = "c"; // Placeholder
-			answerField.setText(practiceQuestionSet[1]+ " " + firstLetter.toUpperCase());
-		} 
-
-		// display remaining attempts
-		Text displayAttempts = new Text(attemptsRemaining + "\nAttempts Remaining");
-		displayAttempts.setLayoutX( 50 ) ;
-		displayAttempts.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset * 4 );
-		displayAttempts.setTextAlignment(TextAlignment.CENTER);
-		displayAttempts.setStyle("-fx-background-color: #d0e7ff; -fx-font-size: 1.75em; ");
-
-		// make lock in button appear when answer field text is changed
-		answerField.textProperty().addListener(
-				(ObservableValue<? extends String> ov, String old_val, String new_val) -> {
-					practiceLockInButton.setVisible(true);
-				});
-
-
-		practiceQuestionBackground.getChildren().add( practiceQuestionCanvas );
-		practiceQuestionRoot.getChildren().add( practiceQuestionBackground );
-		practiceQuestionRoot.getChildren().add( practiceQuestionPrompt );
-		practiceQuestionRoot.getChildren().add( answerField );
-		practiceQuestionRoot.getChildren().add( practiceLockInButton ); 
-		practiceQuestionRoot.getChildren().add( displayAttempts ); 
-		practiceQuestionRoot.getChildren().add( hearButton );
-
-		practiceLockInButton.setVisible(false);
-
-		practiceConfirmButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-
-				// make an array of questions
-				ArrayList<String> questionArray = new ArrayList<String>();
-				try {
-					String line;
-					BufferedReader readQuestions = new BufferedReader(new FileReader(QUESTIONBANKFILE));
-					while((line = readQuestions.readLine()) != null) {
-						// get to category line
-						if (line.equals(practiceCategory)) {
-							break;
-						}
-					}
-					while(((line = readQuestions.readLine()) != null) && (line.indexOf('(') >= 0 )) {
-						questionArray.add( line );
-					}
-					readQuestions.close();
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-
-				// choose one question randomly
-				Collections.shuffle(questionArray);
-				Random chooseRandomQuestion = new Random();
-				String practiceQuestionWhole = questionArray.get(chooseRandomQuestion.nextInt(questionArray.size()));
-				practiceQuestionSet = LineToVar.toVarSet(practiceQuestionWhole);
-				answerField.setText(practiceQuestionSet[1]+ " ");
-				TextToSpeech.say(practiceQuestionSet[0]);
-				
-				// reset attempts
-				attemptsRemaining = 3;
-				try {
-					PrintWriter resetAttempts = new PrintWriter(new FileWriter(PRACTICEATTEMPTFILE));
-					resetAttempts.println(attemptsRemaining + "");
-					resetAttempts.close();
-					// save new question
-					PrintWriter saveQuestion = new PrintWriter(new FileWriter(PRACTICEQUESTIONFILE));
-					saveQuestion.println(practiceQuestionWhole);
-					saveQuestion.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-
-				displayAttempts.setText(attemptsRemaining + "\nAttempts Remaining");
-				practiceQuestionPrompt.setText( practiceQuestionSet[0] );
-
-				practiceQuestionRoot.getChildren().add(menuButton);
-				guiStage.setScene( practiceQuestionScene );
-
-			}
+		practiceConfirmButton.setOnAction(e->{
+			PracticeQuestionScene pqs = new PracticeQuestionScene(practiceQuestionSet, attemptsRemaining, true, practiceCategory, menuButton, guiStage);
+			guiStage.setScene(pqs.getPracticeQuestionScene());
 		});
 
-		practiceReturnButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				practiceQuestionRoot.getChildren().add(menuButton);
-				answerField.setText(practiceQuestionSet[1]+ " ");
-				TextToSpeech.say(practiceQuestionSet[0]);
-				guiStage.setScene( practiceQuestionScene );
-				if (attemptsRemaining == 1) {
-					String firstLetter = "" + practiceQuestionSet[2].charAt(0);
-					answerField.setText(practiceQuestionSet[1]+ " " + firstLetter.toUpperCase());
-				}
-			}
+		practiceReturnButton.setOnAction(e->{
+			PracticeQuestionScene pqs = new PracticeQuestionScene(practiceQuestionSet, attemptsRemaining, false, practiceCategory, menuButton, guiStage);
+			guiStage.setScene(pqs.getPracticeQuestionScene());
 		});
-
-		practiceLockInButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-
-				if (Attempt.isCorrect(answerField.getText(), practiceQuestionSet)) {
-					// User answered correctly
-					practiceQuestionRoot.getChildren().remove(answerField);
-					practiceQuestionRoot.getChildren().remove(practiceLockInButton);
-					practiceQuestionRoot.getChildren().remove(displayAttempts);
-					practiceQuestionRoot.getChildren().remove(hearButton);
-
-					String answer = "\n\nCorrect Answer!!\n\nYou Answered:\n" + practiceQuestionSet[1] + " " + practiceQuestionSet[2];
-					practiceQuestionPrompt.setText(practiceQuestionSet[0] + answer);
-					TextToSpeech.correct();
-					attemptsRemaining = 0;
-				} else {
-					// User answered incorrectly
-					attemptsRemaining--;
-					if (attemptsRemaining == 0) {
-						practiceQuestionRoot.getChildren().remove(answerField);
-						practiceQuestionRoot.getChildren().remove(practiceLockInButton);
-						practiceQuestionRoot.getChildren().remove(displayAttempts);
-						practiceQuestionRoot.getChildren().remove(hearButton);
-
-						String answer = "\n\nNo more attempts!\n\nAnswer:\n" + practiceQuestionSet[1] + " " + practiceQuestionSet[2];
-						practiceQuestionPrompt.setText(practiceQuestionSet[0] + answer);
-						TextToSpeech.say("Sorry! The answer was " + practiceQuestionSet[1]+ " " + practiceQuestionSet[2]);
-
-					} else {
-						TextToSpeech.incorrect();
-						answerField.setText(practiceQuestionSet[1]+ " ");
-						if (attemptsRemaining == 1) {
-							// make text red and display the first letter
-							answerField.setStyle( Quinzical.buttonStyle + " -fx-text-fill: #B43757;");
-							String firstLetter = "" + practiceQuestionSet[2].charAt(0);
-							answerField.setText(practiceQuestionSet[1]+ " " + firstLetter.toUpperCase());
-						}
-						displayAttempts.setText(attemptsRemaining + "\nAttempts Remaining");
-					}
-				}
-
-				Attempt.save(attemptsRemaining, PRACTICEATTEMPTFILE);
-
-			}
-		});
+		
 		return practiceScene;
-		
-		
 		
 	}
 }

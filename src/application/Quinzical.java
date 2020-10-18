@@ -229,67 +229,11 @@ public class Quinzical extends Application
 			guiStage.setScene(ss.getSettingScene());
 		});
 
-		resetButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-
-				// reset sub-menu scene
-				Group resetRoot = new Group();
-				Scene resetScene = new Scene( resetRoot );
-
-				StackPane resetBackground = new StackPane();
-				Canvas resetCanvas = new Canvas( width, height );
-				resetBackground.setStyle( backgroundStyle );
-
-				GraphicsContext resetTitle = resetCanvas.getGraphicsContext2D();
-				// reset sub-menu title
-				resetTitle.setFill( Color.PURPLE );
-				resetTitle.setStroke( Color.BLACK );
-				resetTitle.setLineWidth(2);
-				resetTitle.setFont( titleFont );
-				resetTitle.fillText( "Reset Progress", 300, 100 );
-				resetTitle.strokeText( "Reset Progress", 300, 100 );
-
-				String resetExplanation = 
-						"If you reset, you will lose:\n"
-								+ "   > In-progress Games\n"
-								+ "   > In-progress Practice Questions\n"
-								+ "   > Any unlockables or achievements\n\n"
-								+ "             Settings will be retained.";
-				Text resetText = new Text( resetExplanation );
-				resetText.setWrappingWidth( 800 );
-				resetText.setStyle("-fx-font-size: 3em; ");
-				//resetText.setTextAlignment(TextAlignment.CENTER);
-				resetText.setLayoutY(buttonYStart + 30);
-				resetText.setLayoutX(200);
-
-				resetConfirmButton.setDisable(false);
-
-				resetBackground.getChildren().add( resetCanvas );
-				resetRoot.getChildren().add( resetBackground );
-				resetRoot.getChildren().add( resetConfirmButton );
-				resetRoot.getChildren().add( resetText );
-				resetRoot.getChildren().add(menuButton);
-
-				guiStage.setScene( resetScene );
-			}
+		resetButton.setOnAction(e->{
+			ResetScene rs = new ResetScene(menuButton);
+			guiStage.setScene(rs.getResetScene());
 		});
 
-		resetConfirmButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-
-				attemptsRemaining = 0;
-				currentScore = 0;
-
-				Attempt.save(attemptsRemaining, PRACTICEATTEMPTFILE);
-				QuestionSelector.reset(GAMEQUESTIONSFILE);
-				Score.reset(GAMESCOREFILE);
-				QuestionSelector.lock();
-
-				resetConfirmButton.setDisable(true);
-			}
-		});
 
 		guiStage.show();
 	}

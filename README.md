@@ -11,6 +11,7 @@ To do this:
 - chmod +x runGame.sh
 - ./runGame.sh
 
+If the new Virtual Machine messes up the window size, change the system aspect ratio.
 
 ## How do I add questions?
 Edit the "categories" text file.

@@ -42,7 +42,7 @@ public class Quinzical extends Application
 	public static final String GAMEQUESTIONSFILE = "GameData/Game/Questions";
 	public static final String GAMESCOREFILE = "GameData/Game/.Score";
 
-	Scene menuScene, gameScene, practiceScene, settingsScene, resetScene;
+	Scene menuScene;
 
 
 	// title settings
@@ -123,12 +123,7 @@ public class Quinzical extends Application
 		resetButton.setPrefSize( buttonXScale , buttonYScale );
 		resetButton.setStyle("-fx-text-fill: #D4D4D4; -fx-background-color: #B43757; -fx-font-size: 2em; ");
 
-		// button used to reset data (in reset submenu)
-		Button resetConfirmButton = new Button( "Confirm Reset" );
-		resetConfirmButton.setLayoutX( buttonXPos );
-		resetConfirmButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
-		resetConfirmButton.setPrefSize( buttonXScale , buttonYScale );
-		resetConfirmButton.setStyle("-fx-text-fill: #D4D4D4; -fx-background-color: #4E4C58; -fx-font-size: 2em; ");
+
 
 		// button used to confirm category selection in practice module
 		Button practiceConfirmButton = new Button( "Practice This!" );
@@ -161,7 +156,6 @@ public class Quinzical extends Application
 		menuButton.setStyle("-fx-text-fill: #D4D4D4; -fx-background-color: #B43757; -fx-font-size: 2em; ");
 		menuButton.setOnAction(e-> guiStage.setScene(menuScene));
 
-		//button used to test speed in setting
 
 
 		//button to speak the question
@@ -174,35 +168,7 @@ public class Quinzical extends Application
 			TextToSpeech.say(PracticeScene.practiceQuestionSet[0]);
 		});
 
-		//button to speak the game question
-		Button hearGameButton = new Button( "Hear Question" );
-		hearGameButton.setLayoutX(buttonXPos + 350);
-		hearGameButton.setLayoutY(buttonYStart + buttonYOffset );
-		hearGameButton.setPrefSize( buttonXScale/2 , buttonYScale/2 );
-		hearGameButton.setStyle("-fx-background-color: #003399; -fx-font-size: 1.00em; -fx-text-fill: white; ");
-		hearGameButton.setOnAction(e-> {
-			TextToSpeech.say(QuestionScene.gameQuestionSet[0]);
-		});
 
-		// button used to lock in a game question attempt
-		Button gameLockInButton = new Button( "I'm Sure!" );
-		gameLockInButton.setLayoutX( buttonXPos );
-		gameLockInButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
-		gameLockInButton.setPrefSize( buttonXScale , buttonYScale );
-		gameLockInButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 2em; ");
-		
-		// restart game module button
-		Button restartButton = new Button( "New Game" );
-		restartButton.setLayoutX( buttonXPos );
-		restartButton.setLayoutY( buttonYStart + buttonYOffset * 2 );
-		restartButton.setPrefSize( buttonXScale , buttonYScale );
-		restartButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 2em; ");
-		restartButton.setOnAction(e-> {
-			Score.reset(GAMESCOREFILE);
-			QuestionSelector.reset(GAMEQUESTIONSFILE);
-			GridScene gs = new GridScene(restartButton, menuButton, gameLockInButton, hearGameButton, guiStage);
-			guiStage.setScene(gs.getGridScene());
-		});
 
 		root.getChildren().add(gameButton);
 		root.getChildren().add(practiceButton);
@@ -213,11 +179,9 @@ public class Quinzical extends Application
 
 		// button handlers
 		gameButton.setOnAction(e -> {
-			GridScene gs = new GridScene(restartButton, menuButton, gameLockInButton, hearGameButton,  guiStage);
+			GridScene gs = new GridScene(menuButton,  guiStage);
 			guiStage.setScene(gs.getGridScene());
-		}
-				
-);
+		});
 
 		practiceButton.setOnAction(e -> {
 			PracticeScene ps = new PracticeScene(practiceConfirmButton, practiceReturnButton, menuButton, practiceLockInButton, hearButton, guiStage);

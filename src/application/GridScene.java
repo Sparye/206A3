@@ -12,18 +12,21 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import questions.QuestionSelector;
+import questions.TextToSpeech;
 
 public class GridScene{
-	Button restartButton,menuButton,gameLockInButton,hearGameButton;
+	Button menuButton;
 
 	Stage guiStage;
 
-	public GridScene(Button inRestartButton,Button inMenuButton,Button inGameLockInButton,Button inHearGameButton,Stage inGuiStage) {
-		restartButton = inRestartButton;
+	public GridScene(Button inMenuButton,Stage inGuiStage) {
+
 		menuButton = inMenuButton;
-		gameLockInButton = inGameLockInButton;
-		hearGameButton = inHearGameButton;
+	//	gameLockInButton = inGameLockInButton;
 		guiStage = inGuiStage;
+		
+
+		
 	}
 
 	// file names to use
@@ -61,10 +64,10 @@ public class GridScene{
 		newGameButton.setOnAction(e-> {
 			Score.reset(GAMESCOREFILE);
 			QuestionSelector.reset(GAMEQUESTIONSFILE);
-			GridScene gs = new GridScene(restartButton, menuButton, gameLockInButton, hearGameButton, guiStage);
+			GridScene gs = new GridScene( menuButton, guiStage);
 			guiStage.setScene(gs.getGridScene());
 		});
-		GridPane gameGrid = new GridPane();
+//		GridPane gameGrid = new GridPane();
 		// create new question set when game is reset
 		if(QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).size() < 1) {
 			QuestionSelector.copyRandomCategories(QUESTIONBANKFILE, GAMEQUESTIONSFILE);
@@ -90,8 +93,7 @@ public class GridScene{
 			continueButton.setPrefSize( Quinzical.buttonXScale , Quinzical.buttonYScale );
 			continueButton.setStyle("-fx-text-fill: #D4D4D4; -fx-background-color: #B43757; -fx-font-size: 1.75em; ");
 			continueButton.setOnAction(e->{
-				GridScene gs = new GridScene(restartButton, menuButton, gameLockInButton,
-						hearGameButton, guiStage);
+				GridScene gs = new GridScene( menuButton, guiStage);
 				guiStage.setScene(gs.getGridScene());
 			});
 			
@@ -105,13 +107,17 @@ public class GridScene{
 			WinningPrompt.setLayoutY(Quinzical.buttonYStart);
 			WinningPrompt.setLayoutX(200);
 
+			newGameButton.setLayoutX( Quinzical.buttonXPos );
+			newGameButton.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset * 2 );
+			newGameButton.setPrefSize( Quinzical.buttonXScale , Quinzical.buttonYScale );
+			
 			gameGrid.setLayoutX( Quinzical.buttonXPos -250);
 			gameGrid.setLayoutY(Quinzical.buttonYStart);
 			gameBackground.getChildren().add( gameCanvas );
 			gameRoot.getChildren().add( gameBackground );
-			gameRoot.getChildren().add( menuButton );
-		//	gameRoot.getChildren().add( continueButton );
-			gameRoot.getChildren().add(restartButton);
+		//	gameRoot.getChildren().add( menuButton );
+			gameRoot.getChildren().add( continueButton );
+			gameRoot.getChildren().add(newGameButton);
 			gameRoot.getChildren().add(WinningPrompt);
 			//	gameRoot.getChildren().add(gameGrid);
 
@@ -129,18 +135,19 @@ public class GridScene{
 			WinningPrompt.setTextAlignment(TextAlignment.CENTER);
 			WinningPrompt.setLayoutY(Quinzical.buttonYStart);
 			WinningPrompt.setLayoutX(200);
-
+			
+			newGameButton.setLayoutX( Quinzical.buttonXPos );
+			newGameButton.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset * 2 );
+			newGameButton.setPrefSize( Quinzical.buttonXScale , Quinzical.buttonYScale );
 
 			gameGrid.setLayoutX( Quinzical.buttonXPos -250);
 			gameGrid.setLayoutY(Quinzical.buttonYStart);
 			gameBackground.getChildren().add( gameCanvas );
 			gameRoot.getChildren().add( gameBackground );
 			gameRoot.getChildren().add(menuButton);
-			gameRoot.getChildren().add(restartButton);
+			gameRoot.getChildren().add(newGameButton);
 			gameRoot.getChildren().add(WinningPrompt);
-			//	gameRoot.getChildren().add(gameGrid);
 
-			//guiStage.setScene( gameScene );
 			return gameScene;
 		}else {
 			currentScore=Score.getSumAndSave("0");
@@ -174,14 +181,11 @@ public class GridScene{
 					moneyButton.setPrefSize(Quinzical.buttonXScale/2, Quinzical.buttonYScale/2);
 					moneyButton.setStyle("-fx-background-color: #003399; -fx-font-size: 1.75em; -fx-text-fill: white; -fx-font-weight: bold");
 					moneyButton.setOnAction(eve->{
-
 						//	System.out.println(QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE)[0]);
 						QuestionScene.gameQuestionSet=QuestionSelector.getQuestionSetFromValue(moneyButton.getText(), QuestionSelector.getCategoriesInFile(GAMEQUESTIONSFILE).get(Integer.parseInt(moneyButton.getId())/10), GAMEQUESTIONSFILE);	
 						QuestionSelector.deleteLinesContaining(QuestionScene.gameQuestionSet[0], GAMEQUESTIONSFILE);
-						QuestionScene qs = new QuestionScene(restartButton, menuButton, gameLockInButton, hearGameButton,  guiStage, QuestionScene.gameQuestionSet, moneyButton);
+						QuestionScene qs = new QuestionScene( menuButton,  guiStage, QuestionScene.gameQuestionSet, moneyButton);
 						guiStage.setScene(qs.getQuestionScene());
-				
-
 					});
 					if((numQues+r)==6) {
 						GridPane.setConstraints(moneyButton,j,r);
@@ -191,11 +195,7 @@ public class GridScene{
 						GridPane.setConstraints(moneyButton,j,r);
 						gameGrid.getChildren().add(moneyButton);
 					}
-
 				}
-				
-
-
 			}
 
 

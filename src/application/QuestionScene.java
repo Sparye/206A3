@@ -22,20 +22,33 @@ import questions.TimedQuestion;
 import questions.Timer;
 
 public class QuestionScene {
-	Button restartButton,menuButton,gameLockInButton,hearGameButton,dontKnowButton,moneyButton;
+	Button menuButton,gameLockInButton,hearGameButton,dontKnowButton,moneyButton;
 
 	Stage guiStage;
 	
 	public static String[] gameQuestionSet = {"Do not edit the game files!","","sorry"};
 	
-	public QuestionScene(Button inRestartButton,Button inMenuButton,Button inGameLockInButton,Button inHearGameButton,Stage inGuiStage,String[] inQuestionSet,Button inMoneyButton) {
-		restartButton = inRestartButton;
+	public QuestionScene(Button inMenuButton,Stage inGuiStage,String[] inQuestionSet,Button inMoneyButton) {
+
 		menuButton = inMenuButton;
-		gameLockInButton = inGameLockInButton;
-		hearGameButton = inHearGameButton;
 		guiStage = inGuiStage;
 		gameQuestionSet = inQuestionSet;
 		moneyButton = inMoneyButton;
+		
+		gameLockInButton = new Button( "I'm Sure!" );
+		gameLockInButton.setLayoutX( Quinzical.buttonXPos );
+		gameLockInButton.setLayoutY( Quinzical.buttonYStart + Quinzical.buttonYOffset * 2 );
+		gameLockInButton.setPrefSize( Quinzical.buttonXScale , Quinzical.buttonYScale );
+		gameLockInButton.setStyle("-fx-background-color: #50C878; -fx-font-size: 2em; ");
+		
+		hearGameButton = new Button( "Hear Question" );
+		hearGameButton.setLayoutX(Quinzical.buttonXPos + 350);
+		hearGameButton.setLayoutY(Quinzical.buttonYStart + Quinzical.buttonYOffset );
+		hearGameButton.setPrefSize( Quinzical.buttonXScale/2 , Quinzical.buttonYScale/2 );
+		hearGameButton.setStyle("-fx-background-color: #003399; -fx-font-size: 1.00em; -fx-text-fill: white; ");
+		hearGameButton.setOnAction(e-> {
+			TextToSpeech.say(QuestionScene.gameQuestionSet[0]);
+		});
 	}
 		// file names to use
 		public static final String QUESTIONBANKFILE = "categories";
@@ -131,8 +144,7 @@ public class QuestionScene {
 				Timer.timerLabel.setText("");
 				Timer.timerLabel.textProperty().removeListener(changeListener);
 				gameQuestionRoot.getChildren().remove(Timer.timerLabel);
-				GridScene gs = new GridScene(restartButton, menuButton, gameLockInButton,
-						hearGameButton, guiStage);
+				GridScene gs = new GridScene( menuButton, guiStage);
 				guiStage.setScene(gs.getGridScene());});
 
 			gameLockInButton.setOnAction(ev -> {
